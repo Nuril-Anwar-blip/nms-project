@@ -1,3 +1,28 @@
+"""
+File: schemas.py
+
+Definisi Pydantic schemas untuk validasi request dan response API
+Menggunakan Pydantic untuk validasi data dan serialization
+
+Fungsi:
+- Validasi data input dari frontend
+- Serialization data output ke frontend
+- Type checking dan validation otomatis
+- Dokumentasi API otomatis (OpenAPI/Swagger)
+
+Struktur schemas:
+- Base schemas: Schema dasar untuk setiap entity
+- Create schemas: Schema untuk create operation (tanpa ID, timestamps)
+- Update schemas: Schema untuk update operation (semua field optional)
+- Response schemas: Schema untuk response API (dengan ID, timestamps)
+
+Catatan:
+- Semua field required di Base/Create schemas
+- Semua field optional di Update schemas
+- Response schemas menggunakan from_attributes=True untuk SQLAlchemy models
+- Enum types digunakan untuk field dengan nilai terbatas
+"""
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -188,4 +213,56 @@ class OnuSyncItem(BaseModel):
 
 class OnuSyncRequest(BaseModel):
     onus: List[OnuSyncItem]
+
+# Authentication Schemas
+class UserBase(BaseModel):
+    name: str
+    email: str
+    role: Optional[str] = "operator"
+
+class UserCreate(UserBase):
+    password: str
+
+class UserResponse(UserBase):
+    id: int
+    is_active: bool
+    last_login: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    user: dict
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+# Dashboard Schemas
+class DashboardStats(BaseModel):
+    total_olts: int
+    online_olts: int
+    offline_olts: int
+    total_onus: int
+    online_onus: int
+    offline_onus: int
+    active_alarms: int
+    critical_alarms: int
+    major_alarms: int
+    minor_alarms: int
+
+class OltPerformance(BaseModel):
+    id: int
+    name: str
+    ip_address: str
+    status: OltStatus
+    cpu_usage: Optional[float] = None
+    memory_usage: Optional[float] = None
+    uptime: Optional[int] = None
+    temperature: Optional[float] = None
+    last_polled_at: Optional[datetime] = None
 
