@@ -19,6 +19,7 @@
 import { useState, useEffect } from 'react'
 import { getOlts, pollOlt, syncOnus, getOltOnus } from '../services/api'
 import type { Olt, Onu } from '../types'
+import StatusBadge from '../components/StatusBadge'
 
 export default function Monitoring() {
   const [olts, setOlts] = useState<Olt[]>([])
@@ -131,6 +132,27 @@ export default function Monitoring() {
             )}
           </div>
         </div>
+        {/* Legend untuk status perangkat - membantu operator cepat mengenali warna */}
+        <div className="mt-4 px-2">
+          <div className="flex items-center gap-3 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <StatusBadge status="online" size="sm" />
+              <span className="text-xs">Online</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <StatusBadge status="offline" size="sm" />
+              <span className="text-xs">Offline</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <StatusBadge status="warning" size="sm" />
+              <span className="text-xs">Warning</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <StatusBadge status="critical" size="sm" />
+              <span className="text-xs">Critical</span>
+            </div>
+          </div>
+        </div>
 
         {/* OLT Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -138,29 +160,22 @@ export default function Monitoring() {
             <div
               key={olt.id}
               onClick={() => setSelectedOlt(olt)}
-              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                selectedOlt?.id === olt.id
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedOlt?.id === olt.id
+                ? 'border-blue-600 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300'
+                }`}
             >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-900">{olt.name}</h3>
                   <p className="text-sm text-gray-600">{olt.ip_address}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  olt.status === 'online' ? 'bg-green-100 text-green-800' :
-                  olt.status === 'offline' ? 'bg-red-100 text-red-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
-                  {olt.status}
-                </span>
+                <StatusBadge status={olt.status} size="sm" />
               </div>
               {olt.cpu_usage !== null && (
                 <div className="mt-2 text-xs text-gray-600">
-                  CPU: {olt.cpu_usage?.toFixed(1) || 'N/A'}% | 
-                  Memory: {olt.memory_usage?.toFixed(1) || 'N/A'}% | 
+                  CPU: {olt.cpu_usage?.toFixed(1) || 'N/A'}% |
+                  Memory: {olt.memory_usage?.toFixed(1) || 'N/A'}% |
                   Temp: {olt.temperature?.toFixed(1) || 'N/A'}°C
                 </div>
               )}
@@ -211,13 +226,7 @@ export default function Monitoring() {
                         {onu.onu_id}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          onu.status === 'online' ? 'bg-green-100 text-green-800' :
-                          onu.status === 'offline' ? 'bg-red-100 text-red-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {onu.status}
-                        </span>
+                        <StatusBadge status={onu.status} size="sm" />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {onu.rx_power !== null && onu.rx_power !== undefined ? `${onu.rx_power.toFixed(2)} dBm` : '-'}

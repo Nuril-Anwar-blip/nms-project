@@ -25,7 +25,7 @@
  * - OLT harus online untuk provisioning
  */
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useOlts } from '../hooks/useOlts'
 import { provisionOnu } from '../services/api'
 import Card from '../components/Card'
@@ -50,7 +50,7 @@ export default function Provisioning() {
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.olt_id) {
       alert('Please select an OLT')
       return
@@ -68,10 +68,10 @@ export default function Provisioning() {
         ...formData,
         pppoe: showPppoe && formData.pppoe ? formData.pppoe : undefined
       }
-      
+
       await provisionOnu(requestData)
       alert('ONU provisioned successfully!')
-      
+
       // Reset form
       setFormData({
         olt_id: 0,

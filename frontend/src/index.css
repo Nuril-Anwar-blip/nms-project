@@ -20,6 +20,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Tema warna netral dan tipografi untuk NMS (enterprise-friendly)
+   Menggunakan CSS variables agar mudah diubah oleh tim klien. */
+:root {
+  --nms-bg: #f7fafc; /* gray-50 */
+  --nms-surface: #ffffff; /* white */
+  --nms-muted: #6b7280; /* gray-500 */
+  --nms-text: #111827; /* gray-900 */
+  --nms-accent: #2563eb; /* blue-600 */
+  --nms-accent-2: #4f46e5; /* indigo-600 */
+}
+
+body {
+  background-color: var(--nms-bg);
+  color: var(--nms-text);
+}
+
+/* Fokus ring yang lembut untuk aksesibilitas, non-intrusive */
+*:focus {
+  outline: none;
+}
+:focus-visible {
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+  border-radius: 6px;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

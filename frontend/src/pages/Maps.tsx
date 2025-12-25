@@ -66,7 +66,7 @@ export default function Maps() {
               Integrate with Leaflet or Google Maps API to display OLT and ONU locations
             </p>
             <div className="mt-4 text-sm text-gray-600">
-              <p>OLTs with coordinates: {olts.filter(o => o.latitude && o.longitude).length}</p>
+              <p>Total OLTs: {olts.length}</p>
               <p>ONUs with locations: {onus.filter(o => o.location_id).length}</p>
             </div>
           </div>

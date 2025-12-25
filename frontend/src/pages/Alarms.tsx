@@ -30,6 +30,8 @@ import { getAlarms, acknowledgeAlarm } from '../services/api'
 import { useOlts } from '../hooks/useOlts'
 import Table, { TableColumn } from '../components/Table'
 import Card from '../components/Card'
+import SeverityBadge from '../components/SeverityBadge'
+import StatusBadge from '../components/StatusBadge'
 import type { Alarm } from '../types'
 
 export default function Alarms() {
@@ -88,23 +90,7 @@ export default function Alarms() {
     return olt?.name || `OLT-${oltId}`
   }
 
-  /**
-   * Warna badge berdasarkan severity
-   */
-  const getSeverityColor = (severity: string): string => {
-    switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 border-red-300'
-      case 'major':
-        return 'bg-orange-100 text-orange-800 border-orange-300'
-      case 'minor':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'warning':
-        return 'bg-blue-100 text-blue-800 border-blue-300'
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-300'
-    }
-  }
+
 
   /**
    * Definisikan kolom tabel
@@ -113,11 +99,7 @@ export default function Alarms() {
     {
       key: 'severity',
       label: 'Severity',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded text-xs font-medium border ${getSeverityColor(value)}`}>
-          {value.toUpperCase()}
-        </span>
-      )
+      render: (value: string) => <SeverityBadge value={value} />
     },
     {
       key: 'type',
@@ -138,15 +120,7 @@ export default function Alarms() {
     {
       key: 'status',
       label: 'Status',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'active' ? 'bg-red-100 text-red-800' :
-          value === 'acknowledged' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-green-100 text-green-800'
-        }`}>
-          {value}
-        </span>
-      )
+      render: (value: string) => <StatusBadge status={value} size="sm" />
     },
     {
       key: 'occurred_at',

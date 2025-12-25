@@ -21,6 +21,7 @@
 import { useState, useEffect } from 'react'
 import { getActivityLogs } from '../services/api'
 import type { ActivityLog } from '../types'
+import SeverityBadge from '../components/SeverityBadge'
 
 export default function ActivityLogs() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
@@ -66,20 +67,7 @@ export default function ActivityLogs() {
     }
   }
 
-  /**
-   * Warna badge berdasarkan activity type
-   */
-  const activityTypeColors: Record<string, string> = {
-    create: 'bg-green-100 text-green-800',
-    update: 'bg-blue-100 text-blue-800',
-    delete: 'bg-red-100 text-red-800',
-    provision: 'bg-purple-100 text-purple-800',
-    reboot: 'bg-yellow-100 text-yellow-800',
-    reset: 'bg-orange-100 text-orange-800',
-    login: 'bg-indigo-100 text-indigo-800',
-    logout: 'bg-gray-100 text-gray-800',
-    other: 'bg-gray-100 text-gray-800'
-  }
+
 
   return (
     <div className="space-y-6">
@@ -176,11 +164,7 @@ export default function ActivityLogs() {
                         {log.user?.name || log.user?.email || 'System'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          activityTypeColors[log.activity_type] || activityTypeColors.other
-                        }`}>
-                          {log.activity_type}
-                        </span>
+                        <SeverityBadge value={log.activity_type} kind="activity" size="sm" />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {log.entity_type} {log.entity_id ? `#${log.entity_id}` : ''}

@@ -25,8 +25,15 @@ interface CardProps {
 }
 
 export default function Card({ title, children, className = '', headerAction }: CardProps) {
+  /**
+   * Card component disesuaikan untuk tampilan enterprise:
+   * - Background menggunakan variable `--nms-surface`
+   * - Radius sedikit lebih besar untuk kesan modern
+   * - Shadow halus agar tidak mengganggu visual dalam penggunaan lama
+   * - Header terpisah dengan ukuran teks yang jelas
+   */
   return (
-    <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
+    <div className={`bg-[color:var(--nms-surface)] rounded-2xl shadow-sm p-6 ${className}`}>
       {title && (
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>

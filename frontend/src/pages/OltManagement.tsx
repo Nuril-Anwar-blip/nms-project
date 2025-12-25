@@ -26,12 +26,13 @@
 import { useState } from 'react'
 import { useOlts } from '../hooks/useOlts'
 import Table, { TableColumn } from '../components/Table'
+import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
 import Card from '../components/Card'
 import type { Olt, OltCreate } from '../types'
 
 export default function OltManagement() {
-  const { olts, loading, createOlt, updateOlt, deleteOlt, fetchOlts } = useOlts(true, 60000)
+  const { olts, loading, createOlt, updateOlt, deleteOlt } = useOlts(true, 60000)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [editingOlt, setEditingOlt] = useState<Olt | null>(null)
   const [formData, setFormData] = useState<OltCreate>({
@@ -135,13 +136,7 @@ export default function OltManagement() {
       key: 'status',
       label: 'Status',
       render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'online' ? 'bg-green-100 text-green-800' :
-          value === 'offline' ? 'bg-red-100 text-red-800' :
-          'bg-gray-100 text-gray-800'
-        }`}>
-          {value}
-        </span>
+        <StatusBadge status={value} size="sm" />
       )
     },
     {

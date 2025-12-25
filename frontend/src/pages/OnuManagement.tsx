@@ -28,6 +28,7 @@ import { useOlts } from '../hooks/useOlts'
 import { rebootOnu, resetOnu } from '../services/api'
 import Table, { TableColumn } from '../components/Table'
 import Card from '../components/Card'
+import StatusBadge from '../components/StatusBadge'
 import type { Onu } from '../types'
 
 export default function OnuManagement() {
@@ -127,15 +128,7 @@ export default function OnuManagement() {
     {
       key: 'status',
       label: 'Status',
-      render: (value: string) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value === 'online' ? 'bg-green-100 text-green-800' :
-          value === 'offline' ? 'bg-red-100 text-red-800' :
-          'bg-gray-100 text-gray-800'
-        }`}>
-          {value}
-        </span>
-      )
+      render: (value: string) => <StatusBadge status={value} size="sm" />
     },
     {
       key: 'rx_power',

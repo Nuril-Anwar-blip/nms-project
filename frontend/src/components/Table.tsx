@@ -61,7 +61,7 @@ export default function Table<T extends Record<string, any>>({
   return (
     <div className={`overflow-x-auto ${className}`}>
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+        <thead className="bg-white/60 backdrop-blur-sm sticky top-0 z-10">
           <tr>
             {columns.map((column) => (
               <th

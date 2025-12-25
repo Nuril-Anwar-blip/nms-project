@@ -103,19 +103,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar Navigation */}
-      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gradient-to-b from-gray-900 to-gray-800 text-white transition-all duration-300 fixed left-0 top-0 h-full z-40 shadow-2xl`}>
+      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 text-white transition-all duration-300 fixed left-0 top-0 h-full z-40 shadow-xl`}>
         {/* Logo/Brand */}
         <div className="p-6 border-b border-gray-700">
           {sidebarOpen ? (
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <h1 className="text-xl font-semibold text-white">
                 NMS ZTE OLT
               </h1>
-              <p className="text-xs text-gray-400 mt-1">Network Management</p>
+              <p className="text-xs text-gray-300 mt-1">Network Management</p>
             </div>
           ) : (
             <div className="text-center">
-              <div className="text-3xl">📡</div>
+              <div className="text-2xl">📡</div>
             </div>
           )}
         </div>
@@ -144,11 +144,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform scale-105'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                }`}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-150 ${isActive
+                  ? 'text-white bg-gray-800 border-l-4 border-blue-500'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
               >
                 <span className="text-xl">{item.icon}</span>
                 {sidebarOpen && <span className="font-medium">{item.label}</span>}
