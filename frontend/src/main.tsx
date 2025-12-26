@@ -9,6 +9,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import { ConfigProvider, theme } from 'antd'
+import idID from 'antd/es/locale/id_ID'
 import App from './App'
 
 const rootElement = document.getElementById('root')
@@ -19,7 +21,23 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <App />
+    <ConfigProvider
+      locale={idID}
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#2563eb',
+          colorInfo: '#2563eb',
+          colorSuccess: '#16a34a',
+          colorWarning: '#f59e0b',
+          colorError: '#dc2626',
+          borderRadius: 8,
+          fontSize: 14
+        }
+      }}
+    >
+      <App />
+    </ConfigProvider>
   </StrictMode>,
 )
 

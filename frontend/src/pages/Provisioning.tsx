@@ -28,7 +28,7 @@
 import { useState } from 'react'
 import { useOlts } from '../hooks/useOlts'
 import { provisionOnu } from '../services/api'
-import Card from '../components/Card'
+import { Card, Form, Select, Input, InputNumber, Checkbox, Button, message } from 'antd'
 import type { ProvisionOnuRequest } from '../types'
 
 export default function Provisioning() {
@@ -44,35 +44,21 @@ export default function Provisioning() {
   })
   const [showPppoe, setShowPppoe] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [form] = Form.useForm()
 
   /**
    * Handle submit form provisioning
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!formData.olt_id) {
-      alert('Please select an OLT')
-      return
-    }
-
-    if (!formData.serial_number.trim()) {
-      alert('Please enter serial number')
-      return
-    }
-
-    setLoading(true)
+  const handleSubmit = async () => {
     try {
-      // Jika tidak ada PPPoE, hapus dari request
+      await form.validateFields()
+      setLoading(true)
       const requestData: ProvisionOnuRequest = {
         ...formData,
         pppoe: showPppoe && formData.pppoe ? formData.pppoe : undefined
       }
-
       await provisionOnu(requestData)
-      alert('ONU provisioned successfully!')
-
-      // Reset form
+      message.success('Provisioning ONU berhasil')
       setFormData({
         olt_id: 0,
         serial_number: '',
@@ -83,8 +69,9 @@ export default function Provisioning() {
         pppoe: undefined
       })
       setShowPppoe(false)
+      form.resetFields()
     } catch (error) {
-      alert('Failed to provision ONU: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      message.error('Gagal provisioning ONU')
     } finally {
       setLoading(false)
     }
@@ -93,210 +80,137 @@ export default function Provisioning() {
   return (
     <div className="space-y-6">
       <Card title="Provision ONU">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <Form form={form} layout="vertical" className="space-y-6" onFinish={handleSubmit}>
           {/* OLT Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select OLT *
-            </label>
-            <select
-              required
-              value={formData.olt_id}
-              onChange={(e) => setFormData({ ...formData, olt_id: parseInt(e.target.value) })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="0">Select OLT</option>
-              {olts.map(olt => (
-                <option key={olt.id} value={olt.id}>
-                  {olt.name} ({olt.ip_address}) - {olt.status}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Form.Item label="Select OLT" required validateStatus={!formData.olt_id ? 'error' : ''} help={!formData.olt_id ? 'Pilih OLT' : ''}>
+            <Select
+              value={formData.olt_id || undefined}
+              onChange={(v) => setFormData({ ...formData, olt_id: v })}
+              placeholder="Pilih OLT"
+              options={[
+                ...olts.map(olt => ({
+                  value: olt.id,
+                  label: `${olt.name} (${olt.ip_address}) - ${olt.status}`
+                }))
+              ]}
+            />
+          </Form.Item>
 
           {/* PON Port and ONU ID */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                PON Port *
-              </label>
-              <input
-                type="number"
-                required
-                min="1"
-                max="16"
-                value={formData.pon_port}
-                onChange={(e) => setFormData({ ...formData, pon_port: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ONU ID *
-              </label>
-              <input
-                type="number"
-                required
-                min="1"
-                max="64"
-                value={formData.onu_id}
-                onChange={(e) => setFormData({ ...formData, onu_id: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <Form.Item label="PON Port" required>
+              <InputNumber min={1} max={16} style={{ width: '100%' }} value={formData.pon_port} onChange={(v) => setFormData({ ...formData, pon_port: Number(v) })} />
+            </Form.Item>
+            <Form.Item label="ONU ID" required>
+              <InputNumber min={1} max={64} style={{ width: '100%' }} value={formData.onu_id} onChange={(v) => setFormData({ ...formData, onu_id: Number(v) })} />
+            </Form.Item>
           </div>
 
           {/* Serial Number */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Serial Number *
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.serial_number}
-              onChange={(e) => setFormData({ ...formData, serial_number: e.target.value.toUpperCase() })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="ZTEGC12345678"
-            />
-            <p className="mt-1 text-xs text-gray-500">Enter ONU serial number (usually on the device label)</p>
-          </div>
+          <Form.Item label="Serial Number" required>
+            <Input value={formData.serial_number} onChange={(e) => setFormData({ ...formData, serial_number: e.target.value.toUpperCase() })} placeholder="ZTEGC12345678" />
+          </Form.Item>
 
           {/* Name and Model */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                ONU Name
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="Customer-001"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Model
-              </label>
-              <input
-                type="text"
-                value={formData.model}
-                onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                placeholder="F601"
-              />
-            </div>
+            <Form.Item label="ONU Name">
+              <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Customer-001" />
+            </Form.Item>
+            <Form.Item label="Model">
+              <Input value={formData.model} onChange={(e) => setFormData({ ...formData, model: e.target.value })} placeholder="F601" />
+            </Form.Item>
           </div>
 
           {/* PPPoE Account (Optional) */}
           <div>
-            <label className="flex items-center space-x-2 mb-4">
-              <input
-                type="checkbox"
-                checked={showPppoe}
-                onChange={(e) => {
-                  setShowPppoe(e.target.checked)
-                  if (!e.target.checked) {
-                    setFormData({ ...formData, pppoe: undefined })
-                  } else {
-                    setFormData({
-                      ...formData,
-                      pppoe: {
-                        username: '',
-                        password: '',
-                        vlan_id: '',
-                        download_speed: 0,
-                        upload_speed: 0
-                      }
-                    })
-                  }
-                }}
-                className="rounded border-gray-300"
-              />
-              <span className="text-sm font-medium text-gray-700">Create PPPoE Account</span>
-            </label>
+            <Checkbox
+              checked={showPppoe}
+              onChange={(e) => {
+                const checked = e.target.checked
+                setShowPppoe(checked)
+                if (!checked) {
+                  setFormData({ ...formData, pppoe: undefined })
+                } else {
+                  setFormData({
+                    ...formData,
+                    pppoe: {
+                      username: '',
+                      password: '',
+                      vlan_id: '',
+                      download_speed: 0,
+                      upload_speed: 0
+                    }
+                  })
+                }
+              }}
+            >
+              Create PPPoE Account
+            </Checkbox>
 
             {showPppoe && formData.pppoe && (
               <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Username *
-                    </label>
-                    <input
-                      type="text"
-                      required={showPppoe}
-                      value={formData.pppoe.username}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        pppoe: { ...formData.pppoe!, username: e.target.value }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
+                    <Form.Item label="Username" required>
+                      <Input
+                        value={formData.pppoe.username}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pppoe: { ...formData.pppoe!, username: e.target.value }
+                        })}
+                      />
+                    </Form.Item>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Password *
-                    </label>
-                    <input
-                      type="password"
-                      required={showPppoe}
-                      value={formData.pppoe.password}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        pppoe: { ...formData.pppoe!, password: e.target.value }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
+                    <Form.Item label="Password" required>
+                      <Input.Password
+                        value={formData.pppoe.password}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          pppoe: { ...formData.pppoe!, password: e.target.value }
+                        })}
+                      />
+                    </Form.Item>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    VLAN ID
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.pppoe.vlan_id || ''}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      pppoe: { ...formData.pppoe!, vlan_id: e.target.value }
-                    })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    placeholder="100"
-                  />
+                  <Form.Item label="VLAN ID">
+                    <Input
+                      value={formData.pppoe.vlan_id || ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        pppoe: { ...formData.pppoe!, vlan_id: e.target.value }
+                      })}
+                      placeholder="100"
+                    />
+                  </Form.Item>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Download Speed (bps)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.pppoe.download_speed || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        pppoe: { ...formData.pppoe!, download_speed: parseInt(e.target.value) || 0 }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="100000000"
-                    />
+                    <Form.Item label="Download Speed (bps)">
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        value={formData.pppoe.download_speed || 0}
+                        onChange={(v) => setFormData({
+                          ...formData,
+                          pppoe: { ...formData.pppoe!, download_speed: Number(v) || 0 }
+                        })}
+                        placeholder="100000000"
+                      />
+                    </Form.Item>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Upload Speed (bps)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.pppoe.upload_speed || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        pppoe: { ...formData.pppoe!, upload_speed: parseInt(e.target.value) || 0 }
-                      })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="50000000"
-                    />
+                    <Form.Item label="Upload Speed (bps)">
+                      <InputNumber
+                        style={{ width: '100%' }}
+                        value={formData.pppoe.upload_speed || 0}
+                        onChange={(v) => setFormData({
+                          ...formData,
+                          pppoe: { ...formData.pppoe!, upload_speed: Number(v) || 0 }
+                        })}
+                        placeholder="50000000"
+                      />
+                    </Form.Item>
                   </div>
                 </div>
               </div>
@@ -305,15 +219,11 @@ export default function Provisioning() {
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Provisioning...' : 'Provision ONU'}
-            </button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Provision ONU
+            </Button>
           </div>
-        </form>
+        </Form>
       </Card>
     </div>
   )

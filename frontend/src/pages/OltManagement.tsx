@@ -25,48 +25,34 @@
 
 import { useState } from 'react'
 import { useOlts } from '../hooks/useOlts'
-import Table, { TableColumn } from '../components/Table'
-import StatusBadge from '../components/StatusBadge'
-import Modal from '../components/Modal'
-import Card from '../components/Card'
 import type { Olt, OltCreate } from '../types'
+import { Table, Modal, Form, Input, Select, InputNumber, Button, Space, Tag, message, Card } from 'antd'
+import { ExclamationCircleOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 export default function OltManagement() {
   const { olts, loading, createOlt, updateOlt, deleteOlt } = useOlts(true, 60000)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [editingOlt, setEditingOlt] = useState<Olt | null>(null)
-  const [formData, setFormData] = useState<OltCreate>({
-    name: '',
-    ip_address: '',
-    model: '',
-    snmp_community: 'public',
-    snmp_version: 2,
-    snmp_port: 161
-  })
+  const [form] = Form.useForm<OltCreate>()
 
   /**
    * Handle submit form untuk create atau update OLT
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
     try {
+      const values = await form.validateFields()
       if (editingOlt) {
-        await updateOlt(editingOlt.id, formData)
+        await updateOlt(editingOlt.id, values)
+        message.success('OLT berhasil diperbarui')
       } else {
-        await createOlt(formData)
+        await createOlt(values)
+        message.success('OLT baru berhasil dibuat')
       }
       setIsModalOpen(false)
       setEditingOlt(null)
-      setFormData({
-        name: '',
-        ip_address: '',
-        model: '',
-        snmp_community: 'public',
-        snmp_version: 2,
-        snmp_port: 161
-      })
+      form.resetFields()
     } catch (error) {
-      alert('Failed to save OLT: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      message.error('Gagal menyimpan OLT')
     }
   }
 
@@ -74,14 +60,22 @@ export default function OltManagement() {
    * Handle delete OLT dengan konfirmasi
    */
   const handleDelete = async (olt: Olt) => {
-    if (!confirm(`Are you sure you want to delete OLT "${olt.name}"?`)) {
-      return
-    }
-    try {
-      await deleteOlt(olt.id)
-    } catch (error) {
-      alert('Failed to delete OLT: ' + (error instanceof Error ? error.message : 'Unknown error'))
-    }
+    Modal.confirm({
+      title: 'Hapus OLT',
+      icon: <ExclamationCircleOutlined />,
+      content: `Apakah Anda yakin ingin menghapus OLT "${olt.name}"?`,
+      okText: 'Hapus',
+      okButtonProps: { danger: true },
+      cancelText: 'Batal',
+      onOk: async () => {
+        try {
+          await deleteOlt(olt.id)
+          message.success('OLT berhasil dihapus')
+        } catch {
+          message.error('Gagal menghapus OLT')
+        }
+      }
+    })
   }
 
   /**
@@ -89,7 +83,7 @@ export default function OltManagement() {
    */
   const handleEdit = (olt: Olt) => {
     setEditingOlt(olt)
-    setFormData({
+    form.setFieldsValue({
       name: olt.name,
       ip_address: olt.ip_address,
       model: olt.model || '',
@@ -106,181 +100,100 @@ export default function OltManagement() {
   const handleCloseModal = () => {
     setIsModalOpen(false)
     setEditingOlt(null)
-    setFormData({
-      name: '',
-      ip_address: '',
-      model: '',
-      snmp_community: 'public',
-      snmp_version: 2,
-      snmp_port: 161
-    })
+    form.resetFields()
   }
 
   /**
    * Definisikan kolom tabel
    */
-  const columns: TableColumn<Olt>[] = [
+  const columns = [
+    { title: 'Name', dataIndex: 'name', key: 'name' },
+    { title: 'IP Address', dataIndex: 'ip_address', key: 'ip_address' },
+    { title: 'Model', dataIndex: 'model', key: 'model', render: (value: string) => value || '-' },
     {
-      key: 'name',
-      label: 'Name'
-    },
-    {
-      key: 'ip_address',
-      label: 'IP Address'
-    },
-    {
-      key: 'model',
-      label: 'Model'
-    },
-    {
+      title: 'Status',
+      dataIndex: 'status',
       key: 'status',
-      label: 'Status',
       render: (value: string) => (
-        <StatusBadge status={value} size="sm" />
+        <Tag color={value === 'online' ? 'green' : value === 'offline' ? 'red' : 'default'}>{value?.toUpperCase()}</Tag>
       )
     },
     {
+      title: 'CPU',
+      dataIndex: 'cpu_usage',
       key: 'cpu_usage',
-      label: 'CPU',
-      render: (value: number | null) => value !== null ? `${value.toFixed(1)}%` : '-'
+      render: (value: number | null) => (value != null ? `${value.toFixed(1)}%` : '-')
     },
     {
+      title: 'Memory',
+      dataIndex: 'memory_usage',
       key: 'memory_usage',
-      label: 'Memory',
-      render: (value: number | null) => value !== null ? `${value.toFixed(1)}%` : '-'
+      render: (value: number | null) => (value != null ? `${value.toFixed(1)}%` : '-')
     },
     {
+      title: 'Actions',
       key: 'actions',
-      label: 'Actions',
       render: (_: any, row: Olt) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEdit(row)}
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
+        <Space>
+          <Button type="primary" icon={<EditOutlined />} size="small" onClick={() => handleEdit(row)}>
             Edit
-          </button>
-          <button
-            onClick={() => handleDelete(row)}
-            className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-          >
+          </Button>
+          <Button danger icon={<DeleteOutlined />} size="small" onClick={() => handleDelete(row)}>
             Delete
-          </button>
-        </div>
+          </Button>
+        </Space>
       )
     }
   ]
 
   return (
     <div className="space-y-6">
-      <Card
-        title="OLT Management"
-        headerAction={
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Add OLT
-          </button>
-        }
-      >
+      <Card title="OLT Management" extra={<Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingOlt(null); setIsModalOpen(true); }}>Add OLT</Button>}>
         <Table
-          columns={columns}
-          data={olts}
+          rowKey="id"
+          columns={columns as any}
+          dataSource={olts}
           loading={loading}
-          emptyMessage="No OLTs found. Click 'Add OLT' to create one."
+          pagination={{ pageSize: 10, showSizeChanger: true }}
         />
       </Card>
 
       {/* Modal Form */}
       <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        open={isModalOpen}
+        onCancel={handleCloseModal}
         title={editingOlt ? 'Edit OLT' : 'Add New OLT'}
-        size="lg"
-        footer={
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={handleCloseModal}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              {editingOlt ? 'Update' : 'Create'}
-            </button>
-          </div>
-        }
+        okText={editingOlt ? 'Update' : 'Create'}
+        onOk={handleSubmit}
+        destroyOnClose
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">IP Address *</label>
-            <input
-              type="text"
-              required
-              value={formData.ip_address}
-              onChange={(e) => setFormData({ ...formData, ip_address: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="192.168.1.1"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
-            <select
-              value={formData.model}
-              onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select Model</option>
-              <option value="C300">C300</option>
-              <option value="C320">C320</option>
-            </select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">SNMP Community</label>
-              <input
-                type="text"
-                value={formData.snmp_community}
-                onChange={(e) => setFormData({ ...formData, snmp_community: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">SNMP Version</label>
-              <select
-                value={formData.snmp_version}
-                onChange={(e) => setFormData({ ...formData, snmp_version: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="2">v2c</option>
-                <option value="3">v3</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">SNMP Port</label>
-            <input
-              type="number"
-              value={formData.snmp_port}
-              onChange={(e) => setFormData({ ...formData, snmp_port: parseInt(e.target.value) })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </form>
+        <Form form={form} layout="vertical" initialValues={{ snmp_community: 'public', snmp_version: 2, snmp_port: 161 }}>
+          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Nama OLT wajib diisi' }]}>
+            <Input placeholder="Nama OLT" />
+          </Form.Item>
+          <Form.Item label="IP Address" name="ip_address" rules={[{ required: true, message: 'IP Address wajib diisi' }]}>
+            <Input placeholder="192.168.1.1" />
+          </Form.Item>
+          <Form.Item label="Model" name="model">
+            <Select placeholder="Pilih model">
+              <Select.Option value="">Tidak ditentukan</Select.Option>
+              <Select.Option value="C300">C300</Select.Option>
+              <Select.Option value="C320">C320</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="SNMP Community" name="snmp_community">
+            <Input />
+          </Form.Item>
+          <Form.Item label="SNMP Version" name="snmp_version">
+            <Select>
+              <Select.Option value={2}>v2c</Select.Option>
+              <Select.Option value={3}>v3</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="SNMP Port" name="snmp_port">
+            <InputNumber min={1} max={65535} style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )

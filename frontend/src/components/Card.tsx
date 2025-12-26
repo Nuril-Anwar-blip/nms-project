@@ -44,5 +44,3 @@ export default function Card({ title, children, className = '', headerAction }: 
     </div>
   )
 }
-
-// coba aja sih

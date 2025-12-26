@@ -28,11 +28,10 @@
 import { useState, useEffect } from 'react'
 import { getAlarms, acknowledgeAlarm } from '../services/api'
 import { useOlts } from '../hooks/useOlts'
-import Table, { TableColumn } from '../components/Table'
-import Card from '../components/Card'
+import { Table, Card, Select, Button, Tag, notification, Input, InputNumber, DatePicker } from 'antd'
 import SeverityBadge from '../components/SeverityBadge'
-import StatusBadge from '../components/StatusBadge'
 import type { Alarm } from '../types'
+import dayjs from 'dayjs'
 
 export default function Alarms() {
   const { olts } = useOlts()
@@ -42,6 +41,10 @@ export default function Alarms() {
     status?: string
     severity?: string
     olt_id?: number
+    onu_id?: number
+    q?: string
+    from?: string
+    to?: string
   }>({
     status: 'active'
   })
@@ -52,8 +55,20 @@ export default function Alarms() {
   const fetchAlarms = async () => {
     try {
       setLoading(true)
-      const data = await getAlarms(filters)
-      setAlarms(data)
+      const { from, to, q, ...apiFilters } = filters
+      const data = await getAlarms(apiFilters)
+      const filtered = data.filter(a => {
+        const occurred = dayjs(a.occurred_at)
+        const inRange =
+          (!from || occurred.isAfter(dayjs(from).subtract(1, 'millisecond'))) &&
+          (!to || occurred.isBefore(dayjs(to).add(1, 'millisecond')))
+        const matchesQuery =
+          !q ||
+          a.message.toLowerCase().includes((q || '').toLowerCase()) ||
+          a.type.toLowerCase().includes((q || '').toLowerCase())
+        return inRange && matchesQuery
+      })
+      setAlarms(filtered)
     } catch (error) {
       console.error('Failed to fetch alarms:', error)
     } finally {
@@ -75,9 +90,9 @@ export default function Alarms() {
     try {
       await acknowledgeAlarm(alarm.id)
       await fetchAlarms()
-      alert('Alarm acknowledged')
+      notification.success({ message: 'Alarm diacknowledge' })
     } catch (error) {
-      alert('Failed to acknowledge alarm: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      notification.error({ message: 'Gagal acknowledge alarm' })
     }
   }
 
@@ -95,52 +110,18 @@ export default function Alarms() {
   /**
    * Definisikan kolom tabel
    */
-  const columns: TableColumn<Alarm>[] = [
+  const columns = [
+    { title: 'Severity', dataIndex: 'severity', key: 'severity', render: (v: string) => <SeverityBadge value={v} /> },
+    { title: 'Type', dataIndex: 'type', key: 'type' },
+    { title: 'Message', dataIndex: 'message', key: 'message' },
+    { title: 'OLT', dataIndex: 'olt_id', key: 'olt_id', render: (v?: number) => getOltName(v) },
+    { title: 'Status', dataIndex: 'status', key: 'status', render: (v: string) => <Tag color={v === 'active' ? 'red' : v === 'cleared' ? 'green' : 'gold'}>{v.toUpperCase()}</Tag> },
+    { title: 'Occurred At', dataIndex: 'occurred_at', key: 'occurred_at', render: (v: string) => new Date(v).toLocaleString() },
     {
-      key: 'severity',
-      label: 'Severity',
-      render: (value: string) => <SeverityBadge value={value} />
-    },
-    {
-      key: 'type',
-      label: 'Type'
-    },
-    {
-      key: 'message',
-      label: 'Message',
-      render: (value: string) => (
-        <span className="text-sm text-gray-900">{value}</span>
-      )
-    },
-    {
-      key: 'olt_id',
-      label: 'OLT',
-      render: (value: number | undefined) => getOltName(value)
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (value: string) => <StatusBadge status={value} size="sm" />
-    },
-    {
-      key: 'occurred_at',
-      label: 'Occurred At',
-      render: (value: string) => new Date(value).toLocaleString()
-    },
-    {
+      title: 'Actions',
       key: 'actions',
-      label: 'Actions',
       render: (_: any, row: Alarm) => (
-        <div className="flex gap-2">
-          {row.status === 'active' && (
-            <button
-              onClick={() => handleAcknowledge(row)}
-              className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700"
-            >
-              Acknowledge
-            </button>
-          )}
-        </div>
+        row.status === 'active' ? <Button size="small" type="default" onClick={() => handleAcknowledge(row)}>Acknowledge</Button> : null
       )
     }
   ]
@@ -149,56 +130,72 @@ export default function Alarms() {
     <div className="space-y-6">
       <Card title="Alarm Management">
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              value={filters.status || ''}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="acknowledged">Acknowledged</option>
-              <option value="cleared">Cleared</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Severity</label>
-            <select
-              value={filters.severity || ''}
-              onChange={(e) => setFilters({ ...filters, severity: e.target.value || undefined })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Severity</option>
-              <option value="critical">Critical</option>
-              <option value="major">Major</option>
-              <option value="minor">Minor</option>
-              <option value="warning">Warning</option>
-              <option value="info">Info</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">OLT</label>
-            <select
-              value={filters.olt_id || ''}
-              onChange={(e) => setFilters({ ...filters, olt_id: e.target.value ? parseInt(e.target.value) : undefined })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All OLTs</option>
-              {olts.map(olt => (
-                <option key={olt.id} value={olt.id}>{olt.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex items-end">
-            <button
-              onClick={fetchAlarms}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Refresh
-            </button>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+          <Select
+            value={filters.status || ''}
+            onChange={(v) => setFilters({ ...filters, status: v || undefined })}
+            placeholder="Status"
+            allowClear
+            options={[
+              { value: '', label: 'All Status' },
+              { value: 'active', label: 'Active' },
+              { value: 'acknowledged', label: 'Acknowledged' },
+              { value: 'cleared', label: 'Cleared' }
+            ]}
+          />
+          <Select
+            value={filters.severity || ''}
+            onChange={(v) => setFilters({ ...filters, severity: v || undefined })}
+            placeholder="Severity"
+            allowClear
+            options={[
+              { value: '', label: 'All Severity' },
+              { value: 'critical', label: 'Critical' },
+              { value: 'major', label: 'Major' },
+              { value: 'minor', label: 'Minor' },
+              { value: 'warning', label: 'Warning' },
+              { value: 'info', label: 'Info' }
+            ]}
+          />
+          <Select
+            value={filters.olt_id || undefined}
+            onChange={(v) => setFilters({ ...filters, olt_id: v })}
+            placeholder="OLT"
+            options={[
+              { value: undefined as any, label: 'All OLTs' },
+              ...olts.map(olt => ({ value: olt.id, label: olt.name }))
+            ]}
+          />
+          <InputNumber
+            value={filters.onu_id}
+            onChange={(v) => setFilters({ ...filters, onu_id: v || undefined })}
+            placeholder="ONU ID"
+            min={0}
+            className="w-full"
+          />
+          <DatePicker.RangePicker
+            value={
+              filters.from && filters.to
+                ? [dayjs(filters.from), dayjs(filters.to)]
+                : undefined
+            }
+            onChange={(vals) =>
+              setFilters({
+                ...filters,
+                from: vals?.[0]?.toISOString(),
+                to: vals?.[1]?.toISOString()
+              })
+            }
+            className="w-full"
+            allowClear
+          />
+          <Input
+            value={filters.q || ''}
+            onChange={(e) => setFilters({ ...filters, q: e.target.value || undefined })}
+            placeholder="Cari message/type"
+            allowClear
+          />
+          <Button type="primary" onClick={fetchAlarms}>Refresh</Button>
         </div>
 
         {/* Alarm Statistics */}
@@ -230,10 +227,11 @@ export default function Alarms() {
         </div>
 
         <Table
-          columns={columns}
-          data={alarms}
+          rowKey="id"
+          columns={columns as any}
+          dataSource={alarms}
           loading={loading}
-          emptyMessage="No alarms found"
+          pagination={{ pageSize: 20 }}
         />
       </Card>
     </div>

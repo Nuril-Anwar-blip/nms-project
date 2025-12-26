@@ -145,8 +145,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-150 ${isActive
-                  ? 'text-white bg-gray-800 border-l-4 border-blue-500'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    ? 'text-white bg-gray-800 border-l-4 border-blue-500'
+                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
               >
                 <span className="text-xl">{item.icon}</span>
