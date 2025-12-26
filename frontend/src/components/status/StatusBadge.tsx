@@ -1,5 +1,5 @@
 /**
- * File: components/StatusBadge.tsx
+ * File: components/status/StatusBadge.tsx
  *
  * Komponen `StatusBadge` digunakan untuk menampilkan status perangkat
  * (online, offline, warning, critical) secara konsisten di seluruh UI.
@@ -27,14 +27,14 @@
  * - showDot: boolean (opsional, default false)
  */
 
-import { Badge, Tag, Ribbon } from 'antd'
+import { Badge, Tag } from 'antd'
 import { motion } from 'framer-motion'
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, WarningOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 
 interface StatusBadgeProps {
     status: string
     size?: 'sm' | 'md' | 'lg'
-    variant?: 'badge' | 'tag' | 'ribbon'
+    variant?: 'badge' | 'tag'
     showDot?: boolean
     className?: string
 }
@@ -136,17 +136,6 @@ export default function StatusBadge({
                         >
                             {config.label}
                         </Tag>
-                    </motion.div>
-                )
-
-            case 'ribbon':
-                return (
-                    <motion.div {...motionProps}>
-                        <Ribbon
-                            text={config.label}
-                            color={config.color}
-                            {...commonProps}
-                        />
                     </motion.div>
                 )
 

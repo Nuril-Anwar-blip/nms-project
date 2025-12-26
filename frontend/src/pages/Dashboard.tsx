@@ -21,8 +21,16 @@
 import { useState, useEffect } from 'react'
 import { getDashboardStats, getOltPerformance, getRecentAlarms } from '../services/api'
 import type { DashboardStats, OltPerformance, Alarm } from '../types'
-import SeverityBadge from '../components/SeverityBadge'
-import StatusBadge from '../components/StatusBadge'
+import StatsCard from '../components/cards/StatsCard'
+import AlarmCard from '../components/cards/AlarmCard'
+import StatusBadge from '../components/status/StatusBadge'
+import SeverityBadge from '../components/status/SeverityBadge'
+import {
+  ApiOutlined,
+  WifiOutlined,
+  AlertOutlined,
+  CheckCircleOutlined
+} from '@ant-design/icons'
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -200,7 +208,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <SeverityBadge value={alarm.severity} />
+                        <SeverityBadge value={alarm.severity} kind="severity" size="sm" />
                         <span className="font-semibold text-gray-900">{alarm.type}</span>
                       </div>
                       <p className="text-sm text-gray-700 mb-2">{alarm.message}</p>

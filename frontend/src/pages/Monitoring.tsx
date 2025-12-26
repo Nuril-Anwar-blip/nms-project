@@ -19,7 +19,10 @@
 import { useState, useEffect } from 'react'
 import { getOlts, pollOlt, syncOnus, getOltOnus } from '../services/api'
 import type { Olt, Onu } from '../types'
-import StatusBadge from '../components/StatusBadge'
+import StatusBadge from '../components/status/StatusBadge'
+import OnuTable from '../components/table/OnuTable'
+import StatsCard from '../components/cards/StatsCard'
+import CustomButton from '../components/common/CustomButton'
 
 export default function Monitoring() {
   const [olts, setOlts] = useState<Olt[]>([])
@@ -114,20 +117,21 @@ export default function Monitoring() {
           <div className="flex gap-2">
             {selectedOlt && (
               <>
-                <button
+                <CustomButton
                   onClick={() => handlePollOlt(selectedOlt.id)}
+                  loading={polling}
                   disabled={polling}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
                   {polling ? 'Polling...' : 'Poll OLT'}
-                </button>
-                <button
+                </CustomButton>
+                <CustomButton
                   onClick={() => handleSyncOnus(selectedOlt.id)}
+                  loading={polling}
                   disabled={polling}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  type="primary"
                 >
                   {polling ? 'Syncing...' : 'Sync ONUs'}
-                </button>
+                </CustomButton>
               </>
             )}
           </div>

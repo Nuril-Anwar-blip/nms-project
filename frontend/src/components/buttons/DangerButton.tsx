@@ -1,31 +1,32 @@
 /**
- * File: components/common/CustomButton.tsx
+ * File: components/buttons/DangerButton.tsx
  * 
- * Komponen Button kustom untuk NMS dengan styling konsisten
+ * Komponen Danger Button untuk aksi berbahaya di NMS
+ * Digunakan untuk aksi seperti delete, remove, clear, dll
  */
 
 import { Button } from 'antd'
 import { motion } from 'framer-motion'
 
-interface CustomButtonProps {
+interface DangerButtonProps {
     children: React.ReactNode
     onClick?: () => void
-    type?: 'primary' | 'default' | 'dashed' | 'text' | 'link'
     size?: 'small' | 'middle' | 'large'
     loading?: boolean
     disabled?: boolean
     icon?: React.ReactNode
+    className?: string
 }
 
-export default function CustomButton({
+export default function DangerButton({
     children,
     onClick,
-    type = 'primary',
     size = 'middle',
     loading = false,
     disabled = false,
-    icon
-}: CustomButtonProps) {
+    icon,
+    className = ''
+}: DangerButtonProps) {
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
@@ -33,15 +34,17 @@ export default function CustomButton({
             transition={{ duration: 0.1 }}
         >
             <Button
-                type={type}
+                danger
                 size={size}
                 loading={loading}
                 disabled={disabled}
                 icon={icon}
                 onClick={onClick}
+                className={className}
                 style={{
                     borderRadius: '8px',
-                    fontWeight: 500
+                    fontWeight: 500,
+                    borderColor: '#ff4d4f'
                 }}
             >
                 {children}

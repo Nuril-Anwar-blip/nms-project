@@ -1,31 +1,32 @@
 /**
- * File: components/common/CustomButton.tsx
+ * File: components/buttons/PrimaryButton.tsx
  * 
- * Komponen Button kustom untuk NMS dengan styling konsisten
+ * Komponen Primary Button untuk aksi utama di NMS
+ * Digunakan untuk aksi yang paling penting seperti submit, save, dll
  */
 
 import { Button } from 'antd'
 import { motion } from 'framer-motion'
 
-interface CustomButtonProps {
+interface PrimaryButtonProps {
     children: React.ReactNode
     onClick?: () => void
-    type?: 'primary' | 'default' | 'dashed' | 'text' | 'link'
     size?: 'small' | 'middle' | 'large'
     loading?: boolean
     disabled?: boolean
     icon?: React.ReactNode
+    className?: string
 }
 
-export default function CustomButton({
+export default function PrimaryButton({
     children,
     onClick,
-    type = 'primary',
     size = 'middle',
     loading = false,
     disabled = false,
-    icon
-}: CustomButtonProps) {
+    icon,
+    className = ''
+}: PrimaryButtonProps) {
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
@@ -33,15 +34,17 @@ export default function CustomButton({
             transition={{ duration: 0.1 }}
         >
             <Button
-                type={type}
+                type="primary"
                 size={size}
                 loading={loading}
                 disabled={disabled}
                 icon={icon}
                 onClick={onClick}
+                className={className}
                 style={{
                     borderRadius: '8px',
-                    fontWeight: 500
+                    fontWeight: 500,
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
                 }}
             >
                 {children}

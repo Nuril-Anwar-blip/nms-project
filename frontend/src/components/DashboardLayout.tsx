@@ -1,34 +1,68 @@
 /**
  * File: components/DashboardLayout.tsx
  * 
- * Layout component untuk halaman dashboard
+ * Layout component untuk halaman dashboard NMS ZTE OLT
  * Menyediakan sidebar navigasi, header, dan struktur layout utama
  * 
+ * Alasan desain:
+ * - Menggunakan Ant Design Layout untuk struktur enterprise yang profesional
+ * - Sidebar yang collapsible dengan animasi smooth menggunakan React Bits
+ * - Header dengan user info dan notifikasi yang responsif
+ * - Navigasi yang konsisten dengan pola nms.zetset.id
+ * - Dark theme untuk sidebar dengan kontras yang nyaman di mata
+ * 
+ * Integrasi dengan backend:
+ * - User data dari localStorage setelah login
+ * - Logout API call untuk membersihkan session
+ * - Token management untuk autentikasi
+ * 
  * Fungsi:
- * - Menampilkan sidebar dengan menu navigasi
- * - Menampilkan header dengan informasi user dan notifikasi
- * - Menyediakan area konten untuk halaman dashboard
- * - Handle logout user
+ * - Menampilkan sidebar dengan menu navigasi lengkap
+ * - Menampilkan header dengan informasi user, notifikasi, dan settings
+ * - Menyediakan area konten utama untuk halaman dashboard
+ * - Handle logout dan session management
+ * - Responsive design untuk desktop dan tablet
+ * 
+ * Menu items:
+ * - Dashboard: Halaman utama dengan statistik real-time
+ * - Monitoring: Monitoring real-time OLT dan ONU
+ * - OLTs: Manajemen perangkat OLT
+ * - ONUs: Manajemen perangkat ONU
+ * - Provisioning: Provisioning ONU baru
+ * - Alarms: Manajemen alarm dan notifikasi
+ * - Activity Logs: Log aktivitas operator
+ * - Maps: Peta geografis OLT/ONU
+ * - Client API: Dokumentasi API untuk integrasi
  * 
  * Props:
  * - children: React node yang akan dirender di area konten
- * 
- * Menu items:
- * - Dashboard: Halaman utama dengan statistik
- * - Monitoring: Monitoring real-time OLT dan ONU
- * - OLTs: Manajemen OLT
- * - ONUs: Manajemen ONU
- * - Provisioning: Provisioning ONU baru
- * - Alarms: Manajemen alarm
- * - Activity Logs: Log aktivitas operator
- * - Maps: Peta geografis OLT/ONU
- * - Client API: Dokumentasi API
  */
 
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { Layout, Menu, Avatar, Dropdown, Badge, Button, Typography, Space, Tooltip } from 'antd'
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  DashboardOutlined,
+  MonitorOutlined,
+  ApiOutlined,
+  WifiOutlined,
+  SettingOutlined,
+  BellOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  AlertOutlined,
+  FileTextOutlined,
+  EnvironmentOutlined,
+  LinkOutlined
+} from '@ant-design/icons'
+import { motion, AnimatePresence } from 'framer-motion'
 import { logout } from '../services/api'
 import type { User } from '../types'
+
+const { Header, Sider, Content } = Layout
+const { Text, Title } = Typography
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -145,8 +179,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-150 ${isActive
-                    ? 'text-white bg-gray-800 border-l-4 border-blue-500'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  ? 'text-white bg-gray-800 border-l-4 border-blue-500'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
               >
                 <span className="text-xl">{item.icon}</span>

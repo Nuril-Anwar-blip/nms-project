@@ -1,5 +1,5 @@
 /**
- * File: components/SeverityBadge.tsx
+ * File: components/status/SeverityBadge.tsx
  *
  * Komponen `SeverityBadge` menampilkan tingkat severity atau tipe activity 
  * dengan menggunakan Ant Design untuk tampilan enterprise yang profesional.
@@ -24,7 +24,7 @@
  * - value: nilai severity/activity (string)
  * - kind: 'severity' | 'activity' (default 'severity')
  * - size: 'sm' | 'md' | 'lg' (default 'md')
- * - variant: 'tag' | 'badge' | 'ribbon' (default 'tag')
+ * - variant: 'tag' | 'badge' (default 'tag')
  * - showIcon: boolean (default false)
  */
 
@@ -48,7 +48,7 @@ interface Props {
     value: string
     kind?: 'severity' | 'activity'
     size?: 'sm' | 'md' | 'lg'
-    variant?: 'tag' | 'badge' | 'ribbon'
+    variant?: 'tag' | 'badge'
     showIcon?: boolean
     className?: string
 }
@@ -172,19 +172,6 @@ export default function SeverityBadge({
                             text={config.label}
                             {...commonProps}
                         />
-                    </motion.div>
-                )
-
-            case 'ribbon':
-                return (
-                    <motion.div {...motionProps}>
-                        <Tag
-                            color={config.color}
-                            icon={showIcon ? config.icon : undefined}
-                            {...commonProps}
-                        >
-                            {config.label}
-                        </Tag>
                     </motion.div>
                 )
 

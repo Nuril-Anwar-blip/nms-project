@@ -28,8 +28,10 @@
 import { useState, useEffect } from 'react'
 import { getAlarms, acknowledgeAlarm } from '../services/api'
 import { useOlts } from '../hooks/useOlts'
+import AlarmCard from '../components/cards/AlarmCard'
+import SeverityBadge from '../components/status/SeverityBadge'
+import CustomButton from '../components/common/CustomButton'
 import { Table, Card, Select, Button, Tag, notification, Input, InputNumber, DatePicker } from 'antd'
-import SeverityBadge from '../components/SeverityBadge'
 import type { Alarm } from '../types'
 import dayjs from 'dayjs'
 
