@@ -128,7 +128,7 @@ export default function Sidebar({ open, activeTab, user, onToggle, onNavigate }:
                 height: '100vh',
                 position: 'fixed',
                 left: 0,
-                top: 0,
+                top: 56,
                 bottom: 0,
                 width: open ? 240 : 80,
                 transition: 'width 0.2s',

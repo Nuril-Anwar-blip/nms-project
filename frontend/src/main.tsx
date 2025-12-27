@@ -11,7 +11,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { ConfigProvider, theme } from 'antd'
 import idID from 'antd/es/locale/id_ID'
-import App from './App'
+// import App from './App'
+
+import App from './App.Coba'
 
 const rootElement = document.getElementById('root')
 
