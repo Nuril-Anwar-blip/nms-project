@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/status/StatusBadge.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/status/StatusBadge.tsx
  *

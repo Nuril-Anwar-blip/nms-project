@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/layout/DashboardLayout.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/layout/DashboardLayout.tsx
  * 

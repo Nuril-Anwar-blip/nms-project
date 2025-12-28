@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/onu-management/OnuManagementPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/onu-management/OnuManagementPage.tsx
  * 
@@ -19,12 +24,12 @@
  */
 
 import { useState, useEffect } from 'react'
-import { getOnus, createOnu, updateOnu, deleteOnu, rebootOnu } from '../../services/api'
+import { getOnus, createOnu, updateOnu, deleteOnu, rebootOnu, getOlts } from '../../services/api'
 import type { Onu } from '../../types'
 import StatusBadge from '../../components/status/StatusBadge'
 import CustomTable from '../../components/ui/CustomTable'
 import CustomModal from '../../components/ui/CustomModal'
-import { Card, Button, Form, Input, Select, Space, Tag, message } from 'antd'
+import { Card, Button, Form, Input, Select, Space, Tag, message, Modal } from 'antd'
 import {
     WifiOutlined,
     PlusOutlined,
@@ -59,8 +64,8 @@ export default function OnuManagementPage() {
 
     const fetchOlts = async () => {
         try {
-            // TODO: Implement fetch OLTs
-            setOlts([])
+            const data = await getOlts()
+            setOlts(data || [])
         } catch (error) {
             console.error('Failed to fetch OLTs:', error)
         }
@@ -79,8 +84,22 @@ export default function OnuManagementPage() {
     }
 
     const handleDelete = (onu: Onu) => {
-        // TODO: Implement delete confirmation
-        console.log('Delete ONU:', onu)
+        Modal.confirm({
+            title: 'Hapus ONU',
+            content: `Yakin ingin menghapus ONU ${onu.name || onu.serial_number}?`,
+            okText: 'Hapus',
+            okType: 'danger',
+            cancelText: 'Batal',
+            onOk: async () => {
+                try {
+                    await deleteOnu(onu.id)
+                    message.success('ONU berhasil dihapus')
+                    fetchOnus()
+                } catch (error) {
+                    message.error('Gagal menghapus ONU')
+                }
+            }
+        })
     }
 
     const handleReboot = async (onu: Onu) => {

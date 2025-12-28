@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/auth/RegisterPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/auth/RegisterPage.tsx
  * 
@@ -19,51 +24,77 @@
  */
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Form, Input, Button, Checkbox, Alert, Card, Typography } from 'antd'
+import { Link, useNavigate } from 'react-router-dom'
+import { Form, Input, Checkbox, Alert, Typography, Select } from 'antd'
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import CustomButton from '../../components/common/CustomButton'
+import { registerUser } from '../../services/api'
+import { useAuth } from '../../hooks'
+import AuthCard from '../../components/common/AuthCard'
 
-const { Title, Text } = Typography
+const { Text } = Typography
 
+/**
+ * Halaman Register (`RegisterPage`)
+ *
+ * Deskripsi:
+ * Halaman pendaftaran user baru untuk NMS. Menyediakan form pembuatan akun
+ * dengan validasi (nama, email, password, konfirmasi password) dan persetujuan
+ * Syarat & Ketentuan. Setelah berhasil mendaftar, pengguna akan diarahkan ke
+ * halaman login (`/login`).
+ *
+ * Integrasi Backend:
+ * - Endpoint: `POST /api/auth/register`
+ * - Payload yang dikirim: { name, email, password, role? }
+ * - Perhatian: Saat ini API backend membatasi pembuatan user hanya untuk
+ *   administrator yang sudah terautentikasi; oleh karena itu form pendaftaran
+ *   hanya ditampilkan jika user sekarang adalah `admin`. Jika tidak, halaman
+ *   akan menampilkan informasi bahwa pendaftaran harus dilakukan oleh admin.
+ *
+ * Behaviour / Alur:
+ * 1. Administrator mengisi form dan submit.
+ * 2. Frontend memanggil `registerUser(payload)` di `services/api.ts`.
+ * 3. Jika sukses => redirect ke `/login`; jika gagal => tampilkan pesan error.
+ *
+ * Komponen terkait:
+ * - `AuthCard`: wrapper kartu konsisten untuk halaman autentikasi
+ * - `CustomButton`: tombol kustom dengan styling konsisten
+ */
 export default function RegisterPage() {
     const [form] = Form.useForm()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const navigate = useNavigate()
+    const { user } = useAuth()
 
     const handleSubmit = async (values: any) => {
         setLoading(true)
         setError(null)
 
         try {
-            // TODO: Implement registration API call
-            console.log('Registration data:', values)
+            // Panggil API pendaftaran
+            const payload: any = {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+            }
+            if (values.role) payload.role = values.role
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000))
-
-            // Redirect to login after successful registration
+            await registerUser(payload)
+            // Jika API mengembalikan error, handleResponse akan melempar exception
+            // Sukses -> redirect ke login
             navigate('/login')
         } catch (err) {
-            setError('Registration failed. Please try again.')
+            const msg = err instanceof Error ? err.message : 'Pendaftaran gagal. Silakan coba lagi.'
+            setError(msg)
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md shadow-lg">
-                <div className="text-center mb-8">
-                    <Title level={2} className="!mb-2 text-gray-900">
-                        Create Account
-                    </Title>
-                    <Text className="text-gray-600">
-                        Join NMS ZTE OLT System
-                    </Text>
-                </div>
-
+        <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            <AuthCard title="Buat Akun" subtitle="Daftar ke NMS ZTE OLT">
                 {error && (
                     <Alert
                         message={error}
@@ -74,117 +105,123 @@ export default function RegisterPage() {
                     />
                 )}
 
-                <Form
-                    form={form}
-                    name="register"
-                    onFinish={handleSubmit}
-                    layout="vertical"
-                    size="large"
-                >
-                    <Form.Item
-                        name="name"
-                        rules={[{ required: true, message: 'Please input your full name!' }]}
+                {(!user || user.role !== 'admin') ? (
+                    <Alert type="info" showIcon message="Pendaftaran hanya dapat dilakukan oleh administrator yang sudah login. Silakan login sebagai administrator untuk membuat akun baru." />
+                ) : (
+                    <Form
+                        form={form}
+                        name="register"
+                        onFinish={handleSubmit}
+                        layout="vertical"
+                        size="large"
                     >
-                        <Input
-                            prefix={<UserOutlined className="text-gray-400" />}
-                            placeholder="Full Name"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="email"
-                        rules={[
-                            { required: true, message: 'Please input your email!' },
-                            { type: 'email', message: 'Please enter a valid email!' }
-                        ]}
-                    >
-                        <Input
-                            prefix={<MailOutlined className="text-gray-400" />}
-                            placeholder="Email"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="username"
-                        rules={[{ required: true, message: 'Please input your username!' }]}
-                    >
-                        <Input
-                            prefix={<UserOutlined className="text-gray-400" />}
-                            placeholder="Username"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="password"
-                        rules={[
-                            { required: true, message: 'Please input your password!' },
-                            { min: 6, message: 'Password must be at least 6 characters!' }
-                        ]}
-                    >
-                        <Input.Password
-                            prefix={<LockOutlined className="text-gray-400" />}
-                            placeholder="Password"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="confirmPassword"
-                        dependencies={['password']}
-                        rules={[
-                            { required: true, message: 'Please confirm your password!' },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve()
-                                    }
-                                    return Promise.reject(new Error('Passwords do not match!'))
-                                },
-                            }),
-                        ]}
-                    >
-                        <Input.Password
-                            prefix={<LockOutlined className="text-gray-400" />}
-                            placeholder="Confirm Password"
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        name="agreement"
-                        valuePropName="checked"
-                        rules={[
-                            {
-                                validator: (_, value) =>
-                                    value ? Promise.resolve() : Promise.reject(new Error('Should accept agreement')),
-                            },
-                        ]}
-                    >
-                        <Checkbox>
-                            I agree to the <a href="#">Terms and Conditions</a>
-                        </Checkbox>
-                    </Form.Item>
-
-                    <Form.Item>
-                        <CustomButton
-                            type="primary"
-                            loading={loading}
-                            disabled={loading}
-                            className="w-full"
-                            onClick={() => form.submit()}
+                        <Form.Item
+                            name="name"
+                            rules={[{ required: true, message: 'Masukkan nama lengkap!' }]}
                         >
-                            Register
-                        </CustomButton>
-                    </Form.Item>
+                            <Input
+                                prefix={<UserOutlined />}
+                                placeholder="Nama Lengkap"
+                            />
+                        </Form.Item>
 
-                    <div className="text-center">
-                        <Text className="text-gray-600">
-                            Already have an account?{' '}
-                            <a href="/login" className="text-blue-600 hover:text-blue-800">
-                                Sign in
-                            </a>
-                        </Text>
-                    </div>
-                </Form>
-            </Card>
+                        <Form.Item
+                            name="email"
+                            rules={[
+                                { required: true, message: 'Masukkan email!' },
+                                { type: 'email', message: 'Masukkan email yang valid!' }
+                            ]}
+                        >
+                            <Input
+                                prefix={<MailOutlined />}
+                                placeholder="Email"
+                            />
+                        </Form.Item>
+
+                        {/* Username is not required by backend; backend expects name, email, password, role */}
+
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                { required: true, message: 'Masukkan password!' },
+                                { min: 6, message: 'Password minimal 6 karakter!' }
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined />}
+                                placeholder="Password"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="confirmPassword"
+                            dependencies={['password']}
+                            rules={[
+                                { required: true, message: 'Konfirmasi password!' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve()
+                                        }
+                                        return Promise.reject(new Error('Password tidak cocok'))
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined />}
+                                placeholder="Konfirmasi Password"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="agreement"
+                            valuePropName="checked"
+                            rules={[
+                                {
+                                    validator: (_, value) =>
+                                        value ? Promise.resolve() : Promise.reject(new Error('Anda harus menyetujui syarat dan ketentuan')),
+                                },
+                            ]}
+                        >
+                            <Checkbox>
+                                Saya setuju dengan <a href="#">Syarat dan Ketentuan</a>
+                            </Checkbox>
+                        </Form.Item>
+
+                        {/* Role selection: only visible when current user is admin */}
+                        {user && user.role === 'admin' && (
+                            <Form.Item name="role" label="Role" initialValue="operator">
+                                <Select>
+                                    <Select.Option value="admin">Administrator</Select.Option>
+                                    <Select.Option value="operator">Operator</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        )}
+
+                        <Form.Item>
+                            <CustomButton
+                                htmlType="submit"
+                                type="primary"
+                                loading={loading}
+                                disabled={loading}
+                                className="w-full"
+                            >
+                                Daftar
+                            </CustomButton>
+                        </Form.Item>
+
+                        <div className="text-center">
+                            <Text className="text-gray-600">
+                                Sudah punya akun?{' '}
+                                <Link to="/login" className="text-blue-600 hover:text-blue-800">
+                                    Masuk
+                                </Link>
+                            </Text>
+                        </div>
+                    </Form>
+                )}
+            </AuthCard>
         </div>
     )
 }

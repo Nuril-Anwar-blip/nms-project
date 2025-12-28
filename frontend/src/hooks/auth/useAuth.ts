@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/hooks/auth/useAuth.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: hooks/auth/useAuth.ts
  * 
@@ -50,17 +55,18 @@ export function useAuth(): UseAuthReturn {
         setLoading(false)
     }, [])
 
-    const login = async (username: string, password: string): Promise<boolean> => {
+    const login = async (email: string, password: string): Promise<boolean> => {
         setLoading(true)
         setError(null)
 
         try {
-            const response = await loginApi(username, password)
+            const response = await loginApi({ email, password })
 
-            if (response.token && response.user) {
-                localStorage.setItem('token', response.token)
-                localStorage.setItem('user', JSON.stringify(response.user))
-                setUser(response.user)
+            if (response && (response as any).access_token && (response as any).user) {
+                // store under key 'token' for compatibility with getAuthHeaders
+                localStorage.setItem('token', (response as any).access_token)
+                localStorage.setItem('user', JSON.stringify((response as any).user))
+                setUser((response as any).user)
                 return true
             }
 

@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/buttons/index.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/buttons/index.ts
  * 

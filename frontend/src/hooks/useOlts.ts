@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/hooks/useOlts.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: hooks/useOlts.ts
  * 

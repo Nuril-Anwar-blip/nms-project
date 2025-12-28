@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/animations/ShinyText.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import React from 'react';
 
 interface ShinyTextProps {

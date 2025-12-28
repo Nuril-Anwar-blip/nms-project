@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/table/OnuTable.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/table/OnuTable.tsx
  * 

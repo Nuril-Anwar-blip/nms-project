@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/activity/ActivityLogsPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/activity/ActivityLogsPage.tsx
  * 
@@ -23,7 +28,7 @@ import { useState, useEffect } from 'react'
 import { getActivityLogs } from '../../services/api'
 import type { ActivityLog } from '../../types'
 import CustomTable from '../../components/ui/CustomTable'
-import { Card, Input, Select, DatePicker, Button, Space, Tag } from 'antd'
+import { Card, Input, Select, DatePicker, Button, Tag } from 'antd'
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
@@ -44,8 +49,29 @@ export default function ActivityLogsPage() {
 
     const fetchLogs = async () => {
         try {
-            // TODO: Implement API call with filters
-            const data = await getActivityLogs()
+            // Ambil logs dari API lalu lakukan filter sederhana di client
+            const resp = await getActivityLogs({ limit: 1000 })
+            // API mengembalikan { total, skip, limit, logs } atau array tergantung implementasi
+            let data: ActivityLog[] = Array.isArray(resp) ? resp : (resp.logs || [])
+
+            // Filter client-side berdasarkan input user, action, dan range tanggal
+            if (filters.user) {
+                data = data.filter(l => (l.user?.name || '').toLowerCase().includes(filters.user!.toLowerCase()))
+            }
+            if (filters.action) {
+                data = data.filter(l => l.activity_type === filters.action)
+            }
+            if (filters.dateRange && (filters.dateRange as any).length === 2) {
+                const start = (filters.dateRange as any)[0].startOf('day')
+                const end = (filters.dateRange as any)[1].endOf('day')
+                const s = start.valueOf()
+                const e = end.valueOf()
+                data = data.filter(l => {
+                    const t = dayjs(l.created_at).valueOf()
+                    return t >= s && t <= e
+                })
+            }
+
             setLogs(data)
         } catch (error) {
             console.error('Failed to fetch activity logs:', error)
@@ -137,7 +163,7 @@ export default function ActivityLogsPage() {
                     <RangePicker
                         placeholder={['Start date', 'End date']}
                         value={filters.dateRange}
-                        onChange={(dates) => setFilters({ ...filters, dateRange: dates })}
+                        onChange={(dates: any) => setFilters({ ...filters, dateRange: dates as [dayjs.Dayjs, dayjs.Dayjs] | null })}
                     />
                     <Button onClick={fetchLogs}>Apply Filters</Button>
                 </div>
@@ -151,7 +177,7 @@ export default function ActivityLogsPage() {
                         total: logs.length,
                         pageSize: 20,
                         showSizeChanger: true,
-                        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+                        showTotal: (total: number, range: [number, number]) => `${range[0]}-${range[1]} of ${total} items`
                     }}
                     scroll={{ x: 1000 }}
                 />

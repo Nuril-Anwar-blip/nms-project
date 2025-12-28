@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/ui/CustomModal.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/ui/CustomModal.tsx
  * 

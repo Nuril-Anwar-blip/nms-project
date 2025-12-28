@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/animations/BlurText.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * BlurText Component
  * ------------------

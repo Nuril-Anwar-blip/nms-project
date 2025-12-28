@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/dashboard/DashboardPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/dashboard/DashboardPage.tsx
  * 

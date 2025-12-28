@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/olt-management/OltManagementPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/olt-management/OltManagementPage.tsx
  * 
@@ -24,14 +29,14 @@ import type { Olt } from '../../types'
 import StatusBadge from '../../components/status/StatusBadge'
 import CustomTable from '../../components/ui/CustomTable'
 import CustomModal from '../../components/ui/CustomModal'
-import { Card, Button, Form, Input, Select, Space, Tag, message } from 'antd'
+import { Card, Button, Form, Input, Select, Space, Tag, message, Modal } from 'antd'
 import {
     ApiOutlined,
     PlusOutlined,
     EditOutlined,
     DeleteOutlined,
     CheckCircleOutlined,
-    ExclamationCircleOutlined
+
 } from '@ant-design/icons'
 
 export default function OltManagementPage() {
@@ -69,8 +74,22 @@ export default function OltManagementPage() {
     }
 
     const handleDelete = (olt: Olt) => {
-        // TODO: Implement delete confirmation
-        console.log('Delete OLT:', olt)
+        Modal.confirm({
+            title: 'Hapus OLT',
+            content: `Yakin ingin menghapus OLT ${olt.name} (${olt.ip_address})?`,
+            okText: 'Hapus',
+            okType: 'danger',
+            cancelText: 'Batal',
+            onOk: async () => {
+                try {
+                    await deleteOlt(olt.id)
+                    message.success('OLT berhasil dihapus')
+                    fetchOlts()
+                } catch (error) {
+                    message.error('Gagal menghapus OLT')
+                }
+            }
+        })
     }
 
     const handleSubmit = async (values: any) => {
@@ -155,7 +174,7 @@ export default function OltManagementPage() {
             title: 'Actions',
             key: 'actions',
             width: 200,
-            render: (_, record: Olt) => (
+            render: (_: any, record: Olt) => (
                 <Space>
                     <Button
                         size="small"
@@ -228,7 +247,7 @@ export default function OltManagementPage() {
                     <Card size="small">
                         <div className="text-center">
                             <div className="text-2xl font-bold text-orange-600">
-                                {olts.filter(o => o.cpu_usage > 80).length}
+                                {olts.filter(o => (o.cpu_usage || 0) > 80).length}
                             </div>
                             <div className="text-gray-600">High CPU</div>
                         </div>

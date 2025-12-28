@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/StatusBadge.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/StatusBadge.tsx
  *
@@ -27,7 +32,7 @@
  * - showDot: boolean (opsional, default false)
  */
 
-import { Badge, Tag, Ribbon } from 'antd'
+import { Badge, Tag } from 'antd'
 import { motion } from 'framer-motion'
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, WarningOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 
@@ -139,14 +144,18 @@ export default function StatusBadge({
                     </motion.div>
                 )
 
+
             case 'ribbon':
+                // AntD v6 removed Ribbon; fallback to Tag styled as ribbon
                 return (
                     <motion.div {...motionProps}>
-                        <Ribbon
-                            text={config.label}
+                        <Tag
                             color={config.color}
                             {...commonProps}
-                        />
+                            style={{ padding: '4px 8px', borderRadius: 6 }}
+                        >
+                            {config.label}
+                        </Tag>
                     </motion.div>
                 )
 

@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/cards/AlarmCard.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/cards/AlarmCard.tsx
  * 
@@ -9,7 +14,7 @@ import { motion } from 'framer-motion'
 import type { Alarm } from '../../types'
 import SeverityBadge from '../status/SeverityBadge'
 
-const { Text, Title } = Typography
+const { Text } = Typography
 
 interface AlarmCardProps {
     alarm: Alarm
@@ -27,7 +32,7 @@ export default function AlarmCard({ alarm }: AlarmCardProps) {
                 style={{ borderRadius: '8px' }}
             >
                 <div className="flex items-start space-x-3">
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <SeverityBadge value={alarm.severity} kind="severity" size="sm" />
                     </div>
                     <div className="flex-1 min-w-0">

@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/common/CustomButton.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/common/CustomButton.tsx
  * 
@@ -5,26 +10,23 @@
  */
 
 import { Button } from 'antd'
+import type { ButtonProps } from 'antd'
 import { motion } from 'framer-motion'
 
-interface CustomButtonProps {
+interface CustomButtonProps extends ButtonProps {
     children: React.ReactNode
-    onClick?: () => void
-    type?: 'primary' | 'default' | 'dashed' | 'text' | 'link'
-    size?: 'small' | 'middle' | 'large'
-    loading?: boolean
-    disabled?: boolean
-    icon?: React.ReactNode
 }
 
 export default function CustomButton({
     children,
-    onClick,
     type = 'primary',
     size = 'middle',
     loading = false,
     disabled = false,
-    icon
+    icon,
+    className,
+    htmlType,
+    ...rest
 }: CustomButtonProps) {
     return (
         <motion.div
@@ -38,11 +40,13 @@ export default function CustomButton({
                 loading={loading}
                 disabled={disabled}
                 icon={icon}
-                onClick={onClick}
+                htmlType={htmlType}
+                className={className}
                 style={{
                     borderRadius: '8px',
                     fontWeight: 500
                 }}
+                {...rest}
             >
                 {children}
             </Button>

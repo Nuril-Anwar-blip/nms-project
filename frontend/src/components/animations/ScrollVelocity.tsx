@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/animations/ScrollVelocity.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 

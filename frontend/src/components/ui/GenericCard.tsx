@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/ui/GenericCard.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/ui/GenericCard.tsx
  * 

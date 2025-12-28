@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/landing/LandingPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/landing/LandingPage.tsx
  * 
@@ -60,16 +65,12 @@ export default function LandingPage() {
             {/* Hero Section */}
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
-                    <SplitText delay={0.2} className="block">
-                        <Title level={1} className="!text-5xl !font-bold text-gray-900 mb-4">
-                            NMS ZTE OLT
-                        </Title>
-                    </SplitText>
-                    <SplitText delay={0.4} className="block">
-                        <Title level={3} className="!text-xl text-gray-600 !font-normal mb-8">
-                            Network Management System for ZTE OLT Devices
-                        </Title>
-                    </SplitText>
+                    <Title level={1} className="!text-5xl !font-bold text-gray-900 mb-4">
+                        <SplitText text="NMS ZTE OLT" delay={0.2} className="block" />
+                    </Title>
+                    <Title level={3} className="!text-xl text-gray-600 !font-normal mb-8">
+                        <SplitText text="Network Management System for ZTE OLT Devices" delay={0.4} className="block" />
+                    </Title>
                     <div className="space-x-4">
                         <CustomButton
                             type="primary"

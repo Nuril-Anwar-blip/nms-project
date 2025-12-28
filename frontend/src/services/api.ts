@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/services/api.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: services/api.ts
  * 
@@ -60,6 +65,28 @@ export async function login(credentials: LoginRequest): Promise<LoginResponse> {
     body: JSON.stringify(credentials)
   });
   return handleResponse<LoginResponse>(response);
+}
+
+/**
+ * Daftarkan user baru (register)
+ *
+ * Deskripsi:
+ * Fungsi ini memanggil endpoint backend `POST /api/auth/register` untuk
+ * membuat user baru. Backend pada implementasi saat ini mengharuskan
+ * request dilakukan oleh administrator yang sudah terautentikasi.
+ *
+ * Payload yang dikirim: { name, email, password, role? }
+ *
+ * @param data Objek data pendaftaran
+ * @returns Respons API (user yang dibuat)
+ */
+export async function registerUser(data: { name: string; email: string; password: string; role?: string }): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  return handleResponse(response)
 }
 
 /**
@@ -188,6 +215,19 @@ export async function deleteOlt(id: number): Promise<void> {
   if (!response.ok) {
     throw new Error('Failed to delete OLT');
   }
+}
+
+/**
+ * Test koneksi terhadap OLT (ping/snmp/ssh test)
+ * @param oltId OLT ID
+ * @returns Hasil test koneksi dari backend
+ */
+export async function testOltConnection(oltId: number): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/olts/${oltId}/test-connection`, {
+    method: 'POST',
+    headers: getAuthHeaders()
+  });
+  return handleResponse(response);
 }
 
 // ==================== ONU API ====================
@@ -412,6 +452,18 @@ export async function getAlarms(filters?: {
 }
 
 /**
+ * Clear alarm (mark as cleared)
+ * @param alarmId Alarm ID
+ */
+export async function clearAlarm(alarmId: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/alarms/${alarmId}/clear`, {
+    method: 'PUT',
+    headers: getAuthHeaders()
+  })
+  if (!response.ok) throw new Error('Failed to clear alarm')
+}
+
+/**
  * Acknowledge alarm
  * @param alarmId Alarm ID
  */
@@ -455,5 +507,84 @@ export async function getActivityLogs(filters?: {
     headers: getAuthHeaders()
   });
   return handleResponse(response);
+}
+
+// ==================== Maps & Locations API ====================
+
+/**
+ * Dapatkan data OLT yang memiliki koordinat untuk ditampilkan di peta
+ */
+export async function getMapOlts(): Promise<any[]> {
+  const response = await fetch(`${API_BASE}/api/maps/olts`, {
+    headers: getAuthHeaders()
+  })
+  return handleResponse<any[]>(response)
+}
+
+/**
+ * Dapatkan data ONUs yang memiliki koordinat untuk ditampilkan di peta
+ */
+export async function getMapOnus(): Promise<any[]> {
+  const response = await fetch(`${API_BASE}/api/maps/onus`, {
+    headers: getAuthHeaders()
+  })
+  return handleResponse<any[]>(response)
+}
+
+/**
+ * Locations management - CRUD
+ */
+export async function getLocations(): Promise<any[]> {
+  const response = await fetch(`${API_BASE}/api/locations`, {
+    headers: getAuthHeaders()
+  })
+  return handleResponse<any[]>(response)
+}
+
+export async function createLocation(data: { name: string; latitude: number; longitude: number; description?: string }): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/locations`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data)
+  })
+  return handleResponse<any>(response)
+}
+
+// ==================== Client API (external integration) ====================
+
+export async function getClientHealth(): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/health`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientData(): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/data`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientDevices(): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/devices`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientDevice(deviceId: string): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/devices/${encodeURIComponent(deviceId)}`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientStatus(): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/status`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientMetrics(): Promise<any> {
+  const response = await fetch(`${API_BASE}/api/client/metrics`)
+  return handleResponse<any>(response)
+}
+
+export async function getClientCustom(endpoint: string, params?: Record<string, string>): Promise<any> {
+  const qs = params ? `?${new URLSearchParams(params).toString()}` : ''
+  const response = await fetch(`${API_BASE}/api/client/custom?endpoint=${encodeURIComponent(endpoint)}${qs}`)
+  return handleResponse<any>(response)
 }
 

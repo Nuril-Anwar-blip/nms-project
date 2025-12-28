@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/auth/LoginPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/auth/LoginPage.tsx
  * 
@@ -23,49 +28,66 @@
  */
 
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Form, Input, Button, Checkbox, Alert, Card, Typography } from 'antd'
+import { Link, useNavigate } from 'react-router-dom'
+import { Form, Input, Checkbox, Alert, Typography } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks'
 import CustomButton from '../../components/common/CustomButton'
+import AuthCard from '../../components/common/AuthCard'
 
-const { Title, Text } = Typography
+const { Text } = Typography
 
+/**
+ * Halaman Login (`LoginPage`)
+ *
+ * Deskripsi:
+ * Halaman ini menampilkan form login yang meminta `username` (atau email)
+ * dan `password`. Saat form disubmit, fungsi `handleSubmit` memanggil
+ * `login(username, password)` dari `useAuth`.
+ *
+ * Behaviour / Alur:
+ * 1. User memasukkan credential (username/email + password) lalu submit.
+ * 2. `useAuth.login` akan mengirim request ke backend dan menyimpan token
+ *    serta data user di `localStorage` jika berhasil.
+ * 3. Jika login sukses -> pengguna diarahkan ke `/dashboard`.
+ * 4. Jika login gagal -> pesan error ditampilkan di atas form.
+ *
+ * Komponen terkait:
+ * - `AuthCard`: wrapper ulang-pakai untuk tampilan kartu autentikasi
+ * - `CustomButton`: tombol kustom yang mendukung `htmlType="submit"`
+ */
 export default function LoginPage() {
     const [form] = Form.useForm()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { login } = useAuth()
+    const { login, error: authError } = useAuth()
     const navigate = useNavigate()
 
+    /**
+     * Handle submit form login
+     * useAuth.login dari `hooks/auth/useAuth.ts` menerima dua argumen: (username, password)
+     */
     const handleSubmit = async (values: any) => {
         setLoading(true)
         setError(null)
-
         try {
             const success = await login(values.username, values.password)
             if (success) {
                 navigate('/dashboard')
+            } else {
+                setError(authError || 'Login gagal. Periksa username dan password.')
             }
-        } catch (err) {
-            setError('Login failed. Please check your credentials.')
+        } catch (err: any) {
+            const msg = err?.message || 'Login gagal. Periksa koneksi atau server.'
+            setError(msg)
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md shadow-lg">
-                <div className="text-center mb-8">
-                    <Title level={2} className="!mb-2 text-gray-900">
-                        NMS ZTE OLT
-                    </Title>
-                    <Text className="text-gray-600">
-                        Network Management System
-                    </Text>
-                </div>
-
+        <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            <AuthCard title="NMS ZTE OLT" subtitle="Network Management System">
                 {error && (
                     <Alert
                         message={error}
@@ -82,23 +104,24 @@ export default function LoginPage() {
                     onFinish={handleSubmit}
                     layout="vertical"
                     size="large"
+                    initialValues={{ remember: true }}
                 >
                     <Form.Item
                         name="username"
-                        rules={[{ required: true, message: 'Please input your username!' }]}
+                        rules={[{ required: true, message: 'Masukkan username!' }]}
                     >
                         <Input
-                            prefix={<UserOutlined className="text-gray-400" />}
+                            prefix={<UserOutlined />}
                             placeholder="Username"
                         />
                     </Form.Item>
 
                     <Form.Item
                         name="password"
-                        rules={[{ required: true, message: 'Please input your password!' }]}
+                        rules={[{ required: true, message: 'Masukkan password!' }]}
                     >
                         <Input.Password
-                            prefix={<LockOutlined className="text-gray-400" />}
+                            prefix={<LockOutlined />}
                             placeholder="Password"
                         />
                     </Form.Item>
@@ -108,20 +131,14 @@ export default function LoginPage() {
                             <Form.Item name="remember" valuePropName="checked" noStyle>
                                 <Checkbox>Remember me</Checkbox>
                             </Form.Item>
-                            <a href="#" className="text-blue-600 hover:text-blue-800">
+                            <Link to="/forgot-password" className="text-blue-600 hover:text-blue-800">
                                 Forgot password?
-                            </a>
+                            </Link>
                         </div>
                     </Form.Item>
 
                     <Form.Item>
-                        <CustomButton
-                            type="primary"
-                            htmlType="submit"
-                            loading={loading}
-                            disabled={loading}
-                            className="w-full"
-                        >
+                        <CustomButton htmlType="submit" type="primary" loading={loading} disabled={loading} className="w-full">
                             Sign In
                         </CustomButton>
                     </Form.Item>
@@ -129,13 +146,13 @@ export default function LoginPage() {
                     <div className="text-center">
                         <Text className="text-gray-600">
                             Don't have an account?{' '}
-                            <a href="/register" className="text-blue-600 hover:text-blue-800">
+                            <Link to="/register" className="text-blue-600 hover:text-blue-800">
                                 Sign up
-                            </a>
+                            </Link>
                         </Text>
                     </div>
                 </Form>
-            </Card>
+            </AuthCard>
         </div>
     )
 }

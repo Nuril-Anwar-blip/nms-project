@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/client-api/index.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/client-api/index.ts
  * 

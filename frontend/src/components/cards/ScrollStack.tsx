@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/cards/ScrollStack.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import { ReactNode } from 'react'
 
 interface ScrollStackProps {

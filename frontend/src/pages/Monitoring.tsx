@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/Monitoring.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/Monitoring.tsx
  * 
@@ -20,8 +25,6 @@ import { useState, useEffect } from 'react'
 import { getOlts, pollOlt, syncOnus, getOltOnus } from '../services/api'
 import type { Olt, Onu } from '../types'
 import StatusBadge from '../components/status/StatusBadge'
-import OnuTable from '../components/table/OnuTable'
-import StatsCard from '../components/cards/StatsCard'
 import CustomButton from '../components/common/CustomButton'
 
 export default function Monitoring() {

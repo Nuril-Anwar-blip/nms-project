@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/monitoring/MonitoringPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/monitoring/MonitoringPage.tsx
  * 
@@ -20,8 +25,6 @@ import { useState, useEffect } from 'react'
 import { getOlts, pollOlt, syncOnus, getOltOnus } from '../../services/api'
 import type { Olt, Onu } from '../../types'
 import StatusBadge from '../../components/status/StatusBadge'
-import OnuTable from '../../components/table/OnuTable'
-import StatsCard from '../../components/cards/StatsCard'
 import CustomButton from '../../components/common/CustomButton'
 
 export default function MonitoringPage() {
@@ -173,13 +176,40 @@ export default function MonitoringPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         ONUs for {selectedOlt.name}
                     </h3>
-                    <OnuTable
-                        data={onus}
-                        loading={polling}
-                        onEdit={(onu) => console.log('Edit ONU:', onu)}
-                        onDelete={(onu) => console.log('Delete ONU:', onu)}
-                        onReboot={(onu) => console.log('Reboot ONU:', onu)}
-                    />
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Serial Number</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PON Port</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ONU ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">RX Power</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">TX Power</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {onus.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={7} className="px-6 py-4 text-center text-gray-500">No ONUs found</td>
+                                    </tr>
+                                ) : (
+                                    onus.map((onu) => (
+                                        <tr key={onu.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{onu.serial_number}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{onu.name || '-'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{onu.pon_port}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{onu.onu_id}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={onu.status} size="sm" /></td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{onu.rx_power !== null && onu.rx_power !== undefined ? `${onu.rx_power.toFixed(2)} dBm` : '-'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{onu.tx_power !== null && onu.tx_power !== undefined ? `${onu.tx_power.toFixed(2)} dBm` : '-'}</td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

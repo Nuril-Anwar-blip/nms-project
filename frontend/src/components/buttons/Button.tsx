@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/buttons/Button.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import { Button } from 'antd'
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'

@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/types/index.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: types/index.ts
  * 
@@ -192,6 +197,12 @@ export interface ProvisionOnuRequest {
     download_speed?: number;
     upload_speed?: number;
   };
+  // Additional optional fields used by frontend provisioning form
+  service_profile?: string;
+  vlan_id?: number;
+  create_pppoe_account?: boolean;
+  pppoe_username?: string;
+  pppoe_password?: string;
 }
 
 // Tipe data untuk API Response

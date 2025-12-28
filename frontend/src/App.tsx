@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/App.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: App.tsx
  * 

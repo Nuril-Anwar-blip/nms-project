@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/layout/Header.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/layout/Header.tsx
  * 

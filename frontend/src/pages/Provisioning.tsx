@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/Provisioning.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/Provisioning.tsx
  * 
@@ -28,7 +33,6 @@
 import { useState } from 'react'
 import { useOlts } from '../hooks/useOlts'
 import { provisionOnu } from '../services/api'
-import CustomButton from '../components/common/CustomButton'
 import { Card, Form, Select, Input, InputNumber, Checkbox, Button, message } from 'antd'
 import type { ProvisionOnuRequest } from '../types'
 

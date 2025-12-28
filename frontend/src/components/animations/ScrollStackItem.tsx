@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/animations/ScrollStackItem.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import { ReactNode } from 'react'
 import { motion } from 'framer-motion'
 

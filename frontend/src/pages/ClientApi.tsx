@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/ClientApi.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/ClientApi.tsx
  * 
@@ -16,7 +21,7 @@
  * 4. Menjelaskan parameter dan autentikasi yang diperlukan
  */
 
-import Card from '../components/Card'
+import Card from '../components/cards/Card'
 
 export default function ClientApi() {
   const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
@@ -32,14 +37,14 @@ export default function ClientApi() {
               Semua endpoint memerlukan JWT token di header Authorization:
             </p>
             <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-{`Authorization: Bearer <your-token>`}
+              {`Authorization: Bearer <your-token>`}
             </pre>
           </section>
 
           {/* Endpoints */}
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Available Endpoints</h3>
-            
+
             <div className="space-y-4">
               {/* Auth Endpoints */}
               <div className="border-l-4 border-blue-500 pl-4">
@@ -110,7 +115,7 @@ export default function ClientApi() {
             <div className="bg-gray-100 p-4 rounded">
               <p className="text-sm font-medium text-gray-700 mb-2">Login:</p>
               <pre className="text-xs overflow-x-auto">
-{`POST ${apiBase}/api/auth/login
+                {`POST ${apiBase}/api/auth/login
 Content-Type: application/json
 
 {
@@ -127,7 +132,7 @@ Content-Type: application/json
             <div className="bg-gray-100 p-4 rounded">
               <p className="text-sm font-medium text-gray-700 mb-2">Success Response:</p>
               <pre className="text-xs overflow-x-auto">
-{`{
+                {`{
   "access_token": "eyJhbGci...",
   "token_type": "bearer",
   "user": {

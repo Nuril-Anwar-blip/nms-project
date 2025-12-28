@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/cards/ScrollReveal.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import React, {
     useEffect,
     useRef,

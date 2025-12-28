@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/auth/index.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/auth/index.ts
  * 

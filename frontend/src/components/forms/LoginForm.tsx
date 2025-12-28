@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/forms/LoginForm.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/forms/LoginForm.tsx
  * 

@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/alarms/AlarmsPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/alarms/AlarmsPage.tsx
  * 
@@ -44,7 +49,7 @@ export default function AlarmsPage() {
         severity: '',
         status: '',
         search: '',
-        dateRange: null as [dayjs.Dayjs, dayjs.Dayjs] | null
+        dateRange: null as any
     })
 
     useEffect(() => {
@@ -99,7 +104,7 @@ export default function AlarmsPage() {
             dataIndex: 'severity',
             key: 'severity',
             width: 100,
-            render: (severity: string) => <SeverityBadge severity={severity} />
+            render: (severity: string) => <SeverityBadge value={severity} />
         },
         {
             title: 'Status',
@@ -131,7 +136,7 @@ export default function AlarmsPage() {
             title: 'Actions',
             key: 'actions',
             width: 150,
-            render: (_, record: Alarm) => (
+            render: (_: any, record: Alarm) => (
                 <Space>
                     {record.status === 'active' && (
                         <Button

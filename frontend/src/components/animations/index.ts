@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/animations/index.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/animations/index.ts
  * 

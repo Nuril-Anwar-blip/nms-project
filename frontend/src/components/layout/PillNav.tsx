@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/layout/PillNav.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 import { Link, useLocation } from 'react-router-dom'
 
 type NavItem = {

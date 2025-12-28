@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/pages/provisioning/ProvisioningPage.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: pages/provisioning/ProvisioningPage.tsx
  * 

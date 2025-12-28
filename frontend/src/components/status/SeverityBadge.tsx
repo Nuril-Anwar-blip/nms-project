@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/status/SeverityBadge.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/status/SeverityBadge.tsx
  *

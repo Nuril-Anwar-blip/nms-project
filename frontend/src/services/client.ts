@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/services/client.ts
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: services/client.ts
  * 

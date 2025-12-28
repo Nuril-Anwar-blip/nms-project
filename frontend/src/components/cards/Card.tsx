@@ -1,3 +1,8 @@
+/** AUTO-DOC: src/components/cards/Card.tsx
+ * Deskripsi: Komponen / modul frontend.
+ * Catatan: Tambahkan deskripsi lebih lengkap sesuai kebutuhan.
+ */
+
 /**
  * File: components/Card.tsx
  * 
