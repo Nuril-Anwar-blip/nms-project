@@ -152,4 +152,3 @@ async def logout(
     db.commit()
     
     return {"message": "Logged out successfully"}
-

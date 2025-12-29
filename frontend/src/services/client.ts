@@ -20,7 +20,8 @@
  * const data = await apiClient.get('/endpoint')
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+// Support both VITE_API_BASE and VITE_API_BASE_URL env keys
+const API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
 /**
  * Error custom untuk API errors

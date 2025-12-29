@@ -28,8 +28,7 @@ export default function ScrollStackItem({
         p-8
         mb-16
         border
-        border-gray-200
-      "
+        border-gray-200"
         >
             {children}
         </motion.div>

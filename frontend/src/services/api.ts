@@ -26,7 +26,8 @@ import type {
   ProvisionOnuRequest
 } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+// Support both VITE_API_BASE and VITE_API_BASE_URL (some examples use _URL)
+const API_BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 /**
  * Mendapatkan header untuk request yang memerlukan authentication

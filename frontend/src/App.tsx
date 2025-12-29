@@ -20,11 +20,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
-import Register from './pages/Register'
+import RegisterPage from './pages/auth/RegisterPage'
 import Dashboard from './pages/Dashboard'
 import DashboardLayout from './components/layout/DashboardLayout'
 import OltManagement from './pages/OltManagement'
-import OnuManagement from './pages/OnuManagement'
+import OnuManagementPage from './pages/onu-management/OnuManagementPage'
 import Provisioning from './pages/Provisioning'
 import Alarms from './pages/Alarms'
 import Maps from './pages/Maps'
@@ -56,7 +56,7 @@ function App() {
         {/* Public Routes - Tidak memerlukan authentication */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Dashboard Routes - Memerlukan authentication */}
         <Route
@@ -94,7 +94,7 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                <OnuManagement />
+                <OnuManagementPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
