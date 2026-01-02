@@ -16,9 +16,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { ConfigProvider, theme } from 'antd'
 import idID from 'antd/es/locale/id_ID'
-// import App from './App'
-
-import App from './App.Coba'
+// Gunakan App untuk routing lengkap dengan Dashboard
+import App from './App'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const rootElement = document.getElementById('root')
 
@@ -28,23 +28,25 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <ConfigProvider
-      locale={idID}
-      theme={{
-        algorithm: theme.defaultAlgorithm,
-        token: {
-          colorPrimary: '#2563eb',
-          colorInfo: '#2563eb',
-          colorSuccess: '#16a34a',
-          colorWarning: '#f59e0b',
-          colorError: '#dc2626',
-          borderRadius: 8,
-          fontSize: 14
-        }
-      }}
-    >
-      <App />
-    </ConfigProvider>
+    <ErrorBoundary>
+      <ConfigProvider
+        locale={idID}
+        theme={{
+          algorithm: theme.defaultAlgorithm,
+          token: {
+            colorPrimary: '#2563eb',
+            colorInfo: '#2563eb',
+            colorSuccess: '#16a34a',
+            colorWarning: '#f59e0b',
+            colorError: '#dc2626',
+            borderRadius: 8,
+            fontSize: 14
+          }
+        }}
+      >
+        <App />
+      </ConfigProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )
 

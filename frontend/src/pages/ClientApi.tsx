@@ -22,9 +22,28 @@
  */
 
 import Card from '../components/cards/Card'
+import { useState } from 'react'
+import { FaCopy, FaCheck } from 'react-icons/fa' // Pastikan react-icons terinstall, atau ganti dengan SVG icon biasa
 
 export default function ClientApi() {
   const apiBase = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+  const [copied, setCopied] = useState<string | null>(null)
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 2000)
+  }
+
+  const CopyButton = ({ text, id }: { text: string, id: string }) => (
+    <button
+      onClick={() => handleCopy(text, id)}
+      className="absolute top-2 right-2 text-gray-400 hover:text-blue-600 transition-colors"
+      title="Copy to clipboard"
+    >
+      {copied === id ? <FaCheck size={14} className="text-green-500" /> : <FaCopy size={14} />}
+    </button>
+  )
 
   return (
     <div className="space-y-6">
@@ -36,9 +55,12 @@ export default function ClientApi() {
             <p className="text-sm text-gray-600 mb-2">
               Semua endpoint memerlukan JWT token di header Authorization:
             </p>
-            <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
-              {`Authorization: Bearer <your-token>`}
-            </pre>
+            <div className="relative group">
+              <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto font-mono">
+                {`Authorization: Bearer <your-token>`}
+              </pre>
+              <CopyButton text="Authorization: Bearer <your-token>" id="auth-header" />
+            </div>
           </section>
 
           {/* Endpoints */}
@@ -112,10 +134,10 @@ export default function ClientApi() {
           {/* Example Request */}
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Example Request</h3>
-            <div className="bg-gray-100 p-4 rounded">
+            <div className="bg-gray-100 p-4 rounded relative group">
               <p className="text-sm font-medium text-gray-700 mb-2">Login:</p>
-              <pre className="text-xs overflow-x-auto">
-                {`POST ${apiBase}/api/auth/login
+              <pre className="text-xs overflow-x-auto font-mono">
+                {`POST ${apiBase}/api/auth/login\n
 Content-Type: application/json
 
 {
@@ -123,15 +145,22 @@ Content-Type: application/json
   "password": "your-password"
 }`}
               </pre>
+              <CopyButton text={`POST ${apiBase}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@nms.local",
+  "password": "your-password"
+}`} id="req-login" />
             </div>
           </section>
 
           {/* Response Format */}
           <section>
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Response Format</h3>
-            <div className="bg-gray-100 p-4 rounded">
+            <div className="bg-gray-100 p-4 rounded relative group">
               <p className="text-sm font-medium text-gray-700 mb-2">Success Response:</p>
-              <pre className="text-xs overflow-x-auto">
+              <pre className="text-xs overflow-x-auto font-mono">
                 {`{
   "access_token": "eyJhbGci...",
   "token_type": "bearer",
@@ -143,6 +172,16 @@ Content-Type: application/json
   }
 }`}
               </pre>
+              <CopyButton text={`{
+  "access_token": "eyJhbGci...",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "name": "Admin",
+    "email": "admin@nms.local",
+    "role": "admin"
+  }
+}`} id="res-login" />
             </div>
           </section>
         </div>

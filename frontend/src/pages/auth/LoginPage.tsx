@@ -1,33 +1,44 @@
 /**
- * File: src/pages/auth/LoginPage.tsx
- *
- * Halaman Login
- * - Menampilkan form login (username + password)
- * - Memanggil `useAuth().login` untuk autentikasi
- * - Menyediakan dua pilihan tema (Tema Terang / Tema Gelap)
- *
- * Dokumentasi singkat (Bahasa Indonesia):
- * Komponen ini menggunakan Ant Design `Form` untuk validasi dan `AuthCard`
- * sebagai container. Preferensi tema disimpan ke `localStorage`.
+ * File: pages/auth/LoginPage.tsx
+ * Deskripsi: Halaman Login dengan animasi yang menarik
+ * 
+ * Fitur:
+ * - Animasi background menggunakan DotGrid
+ * - Animasi teks menggunakan SplitText dan BlurText
+ * - Theme toggle (dark/light mode)
+ * - Glassmorphism effect
+ * - Responsive design
+ * - Validasi form dengan Ant Design
+ * - Error handling yang baik
+ * 
+ * Komponen Animasi yang Digunakan:
+ * - DotGrid: Background interaktif dengan dots
+ * - SplitText: Animasi teks per kata untuk headline
+ * - BlurText: Teks dengan efek blur saat muncul
  */
 
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Form, Input, Checkbox, Alert, Typography } from 'antd'
 import { UserOutlined, LockOutlined, LoginOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons'
 import { useAuth } from '../../hooks'
 import CustomButton from '../../components/common/CustomButton'
-import { colors } from '../../lib/utils/colors'
+import { colors } from '../../lib/colors'
+import DotGrid from '../../components/animations/DotGrid'
+import SplitText from '../../components/animations/SplitText'
+import BlurText from '../../components/animations/BlurText'
 
 const { Text } = Typography
 
 /**
  * Komponen: LoginPage
+ * 
  * Deskripsi:
- * - Menampilkan halaman login dua kolom (hero kiri, form kanan).
- * - Menyediakan toggle tema (light / dark) yang disimpan di `localStorage`.
- * - Menggunakan Ant Design `Form` untuk validasi dan komponen UI.
- * - Memanggil `useAuth().login` untuk autentikasi dan redirect ke `/dashboard`.
+ * - Menampilkan halaman login dengan animasi yang menarik
+ * - Layout dua kolom: hero kiri dengan animasi, form kanan
+ * - Menyediakan toggle theme (light / dark) yang disimpan di localStorage
+ * - Menggunakan Ant Design Form untuk validasi
+ * - Memanggil `useAuth().login` untuk autentikasi dan redirect ke `/dashboard`
  */
 export default function LoginPage() {
     const [form] = Form.useForm()
@@ -35,47 +46,61 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null)
     const { login, error: authError } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
 
     /**
      * State: theme
-     * - Menyimpan preferensi tema pengguna: 'light' atau 'dark'.
-     * - Default dibaca dari `localStorage` jika tersedia.
+     * Menyimpan preferensi tema pengguna: 'light' atau 'dark'
+     * Default dibaca dari localStorage jika tersedia
      */
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'))
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        const savedTheme = localStorage.getItem('theme')
+        return savedTheme === 'dark' ? 'dark' : 'light'
+    })
 
     /**
-     * Effect: persist tema
-     * - Menyimpan preferensi tema ke `localStorage` setiap kali `theme` berubah.
-     * - Menangani error (contoh: mode private browsing) dengan mengabaikan exception.
+     * Effect: persist theme dan apply ke document
+     * Menyimpan preferensi theme ke localStorage dan apply ke document
      */
     useEffect(() => {
         try {
             localStorage.setItem('theme', theme)
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
         } catch (e) {
             // Jika penyimpanan gagal (contoh: Private mode), tetap lanjutkan tanpa crash
         }
     }, [theme])
 
     /**
-     * Konstanta: heroGradient
-     * - Gradient yang digunakan pada area hero kiri.
-     * - Mengambil warna dari token `colors` agar mudah dikustomisasi.
+     * Effect: Check for success message from registration
      */
-    const heroGradient = `linear-gradient(135deg, ${colors.heroStart} 0%, ${colors.heroEnd} 100%)`
+    useEffect(() => {
+        const state = location.state as { message?: string } | null
+        if (state?.message) {
+            // Show success message (you can use a notification here)
+            setError(null)
+            // You might want to show this as a success alert instead
+        }
+    }, [location])
 
     /**
      * Handler: handleSubmit
-     * - Dipanggil saat form login disubmit.
-     * - Memanggil `login(username, password)` dari `useAuth()`.
-     * - Jika berhasil: redirect ke `/dashboard`, jika gagal: set error message.
+     * Dipanggil saat form login disubmit
+     * Memanggil `login(email, password)` dari `useAuth()`
+     * Jika berhasil: redirect ke `/dashboard`, jika gagal: set error message
      */
     const handleSubmit = async (values: any) => {
         setLoading(true)
         setError(null)
         try {
-            const success = await login(values.username, values.password)
+            // Use email field (API expects email)
+            const success = await login(values.email, values.password)
             if (success) navigate('/dashboard')
-            else setError(authError || 'Login gagal. Periksa username dan password.')
+            else setError(authError || 'Login gagal. Periksa email dan password.')
         } catch (err: any) {
             setError(err?.message || 'Login gagal. Periksa koneksi atau server.')
         } finally {
@@ -83,83 +108,283 @@ export default function LoginPage() {
         }
     }
 
+    const isDark = theme === 'dark'
+    const heroGradient = `linear-gradient(135deg, ${colors.heroStart} 0%, ${colors.heroEnd} 100%)`
+
     return (
-        <div className="min-h-screen flex items-center justify-center p-6" style={{ background: theme === 'dark' ? '#071026' : '#f3f7fb' }}>
+        <div 
+            className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden" 
+            style={{ 
+                background: isDark ? colors.background.dark : colors.background.light 
+            }}
+        >
+            {/* DotGrid Background */}
+            <div
+                className="absolute inset-0 z-0"
+                style={{
+                    opacity: 0.3,
+                    pointerEvents: 'none'
+                }}
+            >
+                <DotGrid
+                    dotSize={4}
+                    gap={20}
+                    baseColor={isDark ? colors.text.secondary : '#9CA3AF'}
+                    activeColor={colors.primary}
+                    proximity={100}
+                    shockRadius={150}
+                    shockStrength={4}
+                    resistance={900}
+                    returnDuration={1.2}
+                />
+            </div>
+
             {/* Theme toggle top-right */}
             <button
                 aria-label="Toggle theme"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="fixed top-6 right-6 z-50 w-10 h-10 rounded-full border flex items-center justify-center bg-white/80"
-                style={{ boxShadow: '0 2px 6px rgba(2,6,23,0.2)' }}
+                className="fixed top-6 right-6 z-50 w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-lg"
+                style={{ 
+                    background: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                }}
             >
-                {theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
+                {isDark ? (
+                    <SunOutlined style={{ color: '#FCD34D', fontSize: '20px' }} />
+                ) : (
+                    <MoonOutlined style={{ color: colors.primary, fontSize: '20px' }} />
+                )}
             </button>
 
-            <div className="w-full max-w-6xl rounded-xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2">
-                {/* Left - Hero */}
-                <div className="hidden md:flex items-center justify-center p-12" style={{ background: heroGradient }}>
-                    {/*
-                        Bagian Hero (kiri) - menampilkan ilustrasi, judul, dan poin fitur.
-                        - Hanya ditampilkan pada layar md ke atas.
-                        - Warna dan gradient diambil dari token `colors`.
-                    */}
-                    <div className="text-center text-white max-w-sm">
-                        <div className="mx-auto mb-6 w-24 h-24 rounded-full bg-white/10 flex items-center justify-center" style={{ boxShadow: 'inset 0 0 40px rgba(255,255,255,0.02)' }}>
-                            <div className="text-3xl" style={{ color: colors.primary }}>⚙️</div>
+            <div className="w-full max-w-6xl rounded-2xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-2 relative z-10" style={{
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                background: isDark ? 'rgba(7, 16, 38, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`
+            }}>
+                {/* Left - Hero dengan animasi */}
+                <div 
+                    className="hidden md:flex items-center justify-center p-12 relative overflow-hidden" 
+                    style={{ background: heroGradient }}
+                >
+                    {/* Gradient overlay untuk efek depth */}
+                    <div 
+                        className="absolute inset-0"
+                        style={{
+                            background: 'linear-gradient(to bottom right, rgba(82, 39, 255, 0.2), transparent)'
+                        }}
+                    />
+                    
+                    <div className="text-center text-white max-w-sm relative z-10">
+                        {/* Logo dengan animasi */}
+                        <div className="mx-auto mb-6 w-24 h-24 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm transition-transform duration-300 hover:scale-110" style={{ 
+                            boxShadow: 'inset 0 0 40px rgba(255,255,255,0.05), 0 8px 32px rgba(0,0,0,0.3)' 
+                        }}>
+                            <div className="text-4xl">⚙️</div>
                         </div>
 
-                        <h2 className="text-3xl font-extrabold mb-2" style={{ color: colors.primary }}>NMS Zetset</h2>
-                        <p className="text-sm text-white/80">Manage your network infrastructure with ease and efficiency</p>
+                        {/* Heading dengan SplitText animasi */}
+                        <h2 
+                            className="text-4xl font-extrabold mb-3"
+                            style={{ color: colors.text.primary }}
+                        >
+                            <SplitText
+                                text="NMS Zetset"
+                                splitType="chars"
+                                delay={0.5}
+                                duration={0.8}
+                                ease="power3.out"
+                                from={{ opacity: 0, y: 30 }}
+                                to={{ opacity: 1, y: 0 }}
+                            />
+                        </h2>
 
-                        <div className="mt-8 text-sm text-white/70 space-y-2">
-                            <p>• Real-time monitoring</p>
-                            <p>• Easy provisioning</p>
-                            <p>• Scalable device management</p>
+                        {/* Subtitle dengan BlurText animasi */}
+                        <div className="mb-8">
+                            <BlurText
+                                text="Manage your network infrastructure with ease and efficiency"
+                                animateBy="words"
+                                direction="top"
+                                delay={80}
+                                className="text-white/90"
+                            />
+                        </div>
+
+                        {/* Features list dengan animasi */}
+                        <div className="mt-8 text-sm text-white/80 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <span className="text-green-400">✓</span>
+                                <span>Real-time monitoring</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-green-400">✓</span>
+                                <span>Easy provisioning</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-green-400">✓</span>
+                                <span>Scalable device management</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right - Form card */}
-                <div className="flex items-center justify-center p-8" style={{ background: theme === 'dark' ? '#0b1220' : '#ffffff' }}>
-                    {/*
-                        Bagian Form (kanan) - menampilkan judul, form login, dan tautan.
-                        - Menggunakan Ant Design Form untuk validasi.
-                        - Menangani tampilan error melalui `Alert`.
-                    */}
+                {/* Right - Form card dengan glassmorphism */}
+                <div 
+                    className="flex items-center justify-center p-8 md:p-12" 
+                    style={{ 
+                        background: isDark ? 'rgba(11, 18, 32, 0.95)' : 'rgba(255, 255, 255, 0.95)'
+                    }}
+                >
                     <div className="w-full max-w-md">
-                        {error && <Alert message={error} type="error" className="mb-4" closable onClose={() => setError(null)} />}
+                        {error && (
+                            <Alert 
+                                message={error} 
+                                type="error" 
+                                className="mb-6 rounded-lg" 
+                                closable 
+                                onClose={() => setError(null)} 
+                            />
+                        )}
+                        {(location.state as { message?: string } | null)?.message && (
+                            <Alert 
+                                message={(location.state as { message: string }).message} 
+                                type="success" 
+                                className="mb-6 rounded-lg" 
+                                closable 
+                                onClose={() => navigate(location.pathname, { replace: true, state: {} })} 
+                            />
+                        )}
 
-                        <div className="mb-6 text-center">
-                            <h1 className="text-3xl font-extrabold" style={{ color: theme === 'dark' ? '#e6eef8' : '#0f172a' }}>Welcome Back</h1>
-                            <p className="text-sm mt-2 text-gray-500">Sign in to your account to continue</p>
+                        {/* Header dengan animasi */}
+                        <div className="mb-8 text-center">
+                            <h1 
+                                className="text-3xl md:text-4xl font-extrabold mb-2"
+                                style={{ 
+                                    color: isDark ? colors.text.primary : colors.text.dark 
+                                }}
+                            >
+                                <SplitText
+                                    text="Welcome Back"
+                                    splitType="words"
+                                    delay={0.3}
+                                    duration={0.6}
+                                    ease="power3.out"
+                                    from={{ opacity: 0, y: 20 }}
+                                    to={{ opacity: 1, y: 0 }}
+                                />
+                            </h1>
+                            <div 
+                                className="text-sm mt-2"
+                                style={{
+                                    color: isDark ? colors.text.secondary : colors.text.muted
+                                }}
+                            >
+                                <BlurText
+                                    text="Sign in to your account to continue"
+                                    animateBy="words"
+                                    direction="top"
+                                    delay={50}
+                                />
+                            </div>
                         </div>
 
-                        <Form form={form} name="login" onFinish={handleSubmit} layout="vertical" size="large" initialValues={{ remember: true }}>
-                            <Form.Item name="username" rules={[{ required: true, message: 'Masukkan username!' }]}>
-                                <Input prefix={<UserOutlined />} placeholder="Enter your username" className="rounded-md" />
+                        {/* Form */}
+                        <Form 
+                            form={form} 
+                            name="login" 
+                            onFinish={handleSubmit} 
+                            layout="vertical" 
+                            size="large" 
+                            initialValues={{ remember: true }}
+                        >
+                            <Form.Item 
+                                name="email" 
+                                rules={[
+                                    { required: true, message: 'Masukkan email!' },
+                                    { type: 'email', message: 'Masukkan email yang valid!' }
+                                ]}
+                            >
+                                <Input 
+                                    prefix={<UserOutlined style={{ color: colors.primary }} />} 
+                                    placeholder="Enter your email" 
+                                    className="rounded-lg"
+                                    style={{
+                                        background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'white',
+                                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E5E7EB'
+                                    }}
+                                />
                             </Form.Item>
 
-                            <Form.Item name="password" rules={[{ required: true, message: 'Masukkan password!' }]}>
-                                <Input.Password prefix={<LockOutlined />} placeholder="Enter your password" className="rounded-md" />
+                            <Form.Item 
+                                name="password" 
+                                rules={[{ required: true, message: 'Masukkan password!' }]}
+                            >
+                                <Input.Password 
+                                    prefix={<LockOutlined style={{ color: colors.primary }} />} 
+                                    placeholder="Enter your password" 
+                                    className="rounded-lg"
+                                    style={{
+                                        background: isDark ? 'rgba(255, 255, 255, 0.05)' : 'white',
+                                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E5E7EB'
+                                    }}
+                                />
                             </Form.Item>
 
                             <Form.Item>
                                 <div className="flex items-center justify-between">
                                     <Form.Item name="remember" valuePropName="checked" noStyle>
-                                        <Checkbox>Remember me</Checkbox>
+                                        <Checkbox
+                                            style={{
+                                                color: isDark ? colors.text.secondary : colors.text.dark
+                                            }}
+                                        >
+                                            Remember me
+                                        </Checkbox>
                                     </Form.Item>
-                                    <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot password?</Link>
+                                    <Link 
+                                        to="/forgot-password" 
+                                        style={{ color: colors.primary }}
+                                        className="hover:underline"
+                                    >
+                                        Forgot password?
+                                    </Link>
                                 </div>
                             </Form.Item>
 
                             <Form.Item>
-                                <CustomButton htmlType="submit" type="primary" loading={loading} disabled={loading} className="w-full flex items-center justify-center" style={{ background: colors.primary, borderColor: colors.primary }}>
+                                <CustomButton 
+                                    htmlType="submit" 
+                                    type="primary" 
+                                    loading={loading} 
+                                    disabled={loading} 
+                                    className="w-full flex items-center justify-center rounded-lg font-semibold transition-all duration-200 hover:scale-105 shadow-lg" 
+                                    style={{ 
+                                        background: `linear-gradient(135deg, ${colors.button.primary}, ${colors.button.primaryHover})`,
+                                        border: 'none',
+                                        height: '48px'
+                                    }}
+                                >
                                     <LoginOutlined className="mr-2" /> Sign In
                                 </CustomButton>
                             </Form.Item>
 
-                            <div className="text-center">
-                                <Text className="text-gray-500">Don't have an account?{' '}<Link to="/register" className="text-blue-600 hover:underline">Create account</Link></Text>
+                            <div className="text-center mt-4">
+                                <Text 
+                                    style={{
+                                        color: isDark ? colors.text.secondary : colors.text.muted
+                                    }}
+                                >
+                                    Don't have an account?{' '}
+                                    <Link 
+                                        to="/register" 
+                                        style={{ color: colors.primary }}
+                                        className="font-semibold hover:underline"
+                                    >
+                                        Create account
+                                    </Link>
+                                </Text>
                             </div>
                         </Form>
                     </div>

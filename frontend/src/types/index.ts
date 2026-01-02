@@ -112,6 +112,7 @@ export interface Alarm {
   id: number;
   olt_id?: number;
   onu_id?: number;
+  olt_name?: string; // Optional: nama OLT jika disertakan dalam response
   severity: 'critical' | 'major' | 'minor' | 'warning' | 'info';
   type: string;
   message: string;
